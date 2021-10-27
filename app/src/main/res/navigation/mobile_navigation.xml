@@ -9,7 +9,7 @@
         android:id="@+id/navigation_home"
         android:name="de.embrandt.aostracker.ui.pregame.PreGameFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/pre_game_fragment" />
+        tools:layout="@layout/fragment_pregame" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
