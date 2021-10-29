@@ -13,45 +13,30 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/battleDateLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:endIconDrawable="@android:drawable/ic_menu_my_calendar"
+            app:endIconMode="custom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/battleDateLayout"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/battleDate"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/battleDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Battle date"
-                    android:inputType="date"
-                    android:selectAllOnFocus="false"
-                    tools:text="2021/10/27" />
+                android:layout_height="wrap_content"
+                android:hint="Battle date"
+                android:inputType="date"
+                android:selectAllOnFocus="false"
+                tools:text="2021/10/27" />
 
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:backgroundTint="#00FFFFFF"
-                android:clickable="true"
-                android:src="@android:drawable/ic_menu_my_calendar"
-                app:layout_constraintBottom_toBottomOf="@+id/battleDateLayout"
-                app:layout_constraintEnd_toEndOf="@+id/battleDateLayout"
-                app:layout_constraintTop_toTopOf="@+id/battleDateLayout"
-                android:focusable="true"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/yourNameLayout"

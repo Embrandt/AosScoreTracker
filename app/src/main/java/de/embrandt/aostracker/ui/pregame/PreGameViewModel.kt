@@ -1,6 +1,10 @@
 package de.embrandt.aostracker.ui.pregame
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -34,4 +38,12 @@ class PreGameViewModel : ViewModel() {
     val opponentFaction = MutableLiveData<String>()
     val opponentName = MutableLiveData<String>()
     val opponentGrandStrategy = MutableLiveData<String>()
+
+    var currentTurnNumber by mutableStateOf(1)
+    var turnStats = mutableStateListOf<String>()
+        private set
+
+    public val currentTurn : String?
+        get() = turnStats.getOrNull(currentTurnNumber)
+
 }

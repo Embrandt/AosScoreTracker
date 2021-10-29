@@ -30,7 +30,7 @@ class PreGameFragment : Fragment() {
 
         binding.pregameViewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
-        binding.imageButton.setOnClickListener { selectDate() }
+        binding.battleDateLayout.setEndIconOnClickListener { selectDate() }
         viewModel.battleDateText.observe(viewLifecycleOwner, {
             binding.battleDate.setText(it)
             Log.i("PregameFragment", "change observed")
