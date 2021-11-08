@@ -21,7 +21,7 @@ import androidx.fragment.app.activityViewModels
 import de.embrandt.aostracker.TurnData
 import de.embrandt.aostracker.ui.pregame.PreGameViewModel
 
-class HomeFragment : Fragment() {
+class TurnDisplayFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
