@@ -31,10 +31,10 @@ class PreGameFragment : Fragment() {
         binding.pregameViewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.battleDateLayout.setEndIconOnClickListener { selectDate() }
-        viewModel.battleDateText.observe(viewLifecycleOwner, {
-            binding.battleDate.setText(it)
-            Log.i("PregameFragment", "change observed")
-        })
+//        viewModel.battleDateText.observe(viewLifecycleOwner, {
+//            binding.battleDate.setText(it)
+//            Log.i("PregameFragment", "change observed")
+//        })
         return binding.root
     }
 

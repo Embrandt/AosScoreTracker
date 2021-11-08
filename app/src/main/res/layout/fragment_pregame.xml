@@ -30,6 +30,7 @@
                 android:id="@+id/battleDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{pregameViewModel.gameData.battleDateText}"
                 android:hint="Battle date"
                 android:inputType="date"
                 android:selectAllOnFocus="false"
@@ -52,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Your Name"
                 android:singleLine="true"
-                android:text="@={pregameViewModel.myName}" />
+                android:text="@={pregameViewModel.gameData.playerName}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -68,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Your Faction"
-                android:text="@={pregameViewModel.myFaction}" />
+                android:text="@={pregameViewModel.gameData.playerFaction}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -83,7 +84,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Your Grand Strategy"
-                android:text="@={pregameViewModel.myGrandStrategy}"/>
+                android:text="@={pregameViewModel.gameData.playerGrandStrategy}"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -98,7 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Opponent's Name"
-                android:text="@={pregameViewModel.opponentName}"/>
+                android:text="@={pregameViewModel.gameData.opponentName}"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -113,7 +114,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Opponent's Faction"
-                android:text="@={pregameViewModel.opponentFaction}"/>
+                android:text="@={pregameViewModel.gameData.opponentFaction}"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -128,7 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Opponent's Grand Strategy"
-                android:text="@={pregameViewModel.opponentGrandStrategy}"/>
+                android:text="@={pregameViewModel.gameData.opponentGrandStrategy}"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 

@@ -5,13 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import de.embrandt.aostracker.GameData
 import de.embrandt.aostracker.TurnData
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class PreGameViewModel : ViewModel() {
     var turnStats = mutableStateListOf<TurnData>()
@@ -28,30 +25,13 @@ class PreGameViewModel : ViewModel() {
         initializeTurns()
     }
 
-    val myName = MutableLiveData<String>().apply {
-        value = ""
+    var gameData by mutableStateOf<GameData>(GameData(LocalDate.now()))
+    fun onGameDataChanged(newData : GameData) {
+        gameData = newData
     }
-
-    val myFaction = MutableLiveData<String>()
-
-    private val _battleDate = MutableLiveData<LocalDate>().apply {
-        value = LocalDate.now()
-    }
-
     fun setBattleDate(year: Int, month: Int, dayOfMont: Int) {
-        _battleDate.value = LocalDate.of(year, month, dayOfMont)
+        onGameDataChanged(gameData.copy(battleDate = LocalDate.of(year, month, dayOfMont)))
     }
-
-    val battleDateText: LiveData<String> = Transformations.map(_battleDate) {
-        val newFormat = DateTimeFormatter.ISO_LOCAL_DATE
-        it.format(newFormat)
-    }
-
-    val myGrandStrategy = MutableLiveData<String>()
-    val opponentFaction = MutableLiveData<String>()
-    val opponentName = MutableLiveData<String>()
-    val opponentGrandStrategy = MutableLiveData<String>()
-
 
     private var currentTurnNumber by mutableStateOf(0)
 
@@ -64,4 +44,6 @@ class PreGameViewModel : ViewModel() {
         }
         turnStats[currentTurnNumber] = turnData
     }
+
+
 }

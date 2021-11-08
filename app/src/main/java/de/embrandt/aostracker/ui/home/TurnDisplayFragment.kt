@@ -49,8 +49,8 @@ class TurnDisplayFragment : Fragment() {
 
     @Composable
     private fun TurnScreenFragment(turnViewModel: PreGameViewModel) {
-        val myName by turnViewModel.myName.observeAsState("")
-        val opponentName by turnViewModel.opponentName.observeAsState("")
+        val myName = turnViewModel.gameData.playerName
+        val opponentName = turnViewModel.gameData.opponentName
         val currentTurn = turnViewModel.currentTurn!!
         TurnScreen(
             myName = myName,
