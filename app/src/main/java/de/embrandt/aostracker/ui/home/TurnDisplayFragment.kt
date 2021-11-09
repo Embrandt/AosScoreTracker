@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import de.embrandt.aostracker.TurnData
 import de.embrandt.aostracker.ui.pregame.PreGameViewModel
+import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
 class TurnDisplayFragment : Fragment() {
 
@@ -35,7 +36,7 @@ class TurnDisplayFragment : Fragment() {
             )
 
             setContent {
-                MaterialTheme {
+                AosTrackerTheme {
                     Surface {
                         Row {
                             val viewModels: PreGameViewModel by activityViewModels()
@@ -138,7 +139,7 @@ class TurnDisplayFragment : Fragment() {
     @Preview
     private fun TurnScreenPreview() {
         val turnData = TurnData(1, true)
-        MaterialTheme {
+        AosTrackerTheme {
             TurnScreen(myName = "Marcel", opponentName = "Bastl", turnData, {})
         }
     }
@@ -146,7 +147,7 @@ class TurnDisplayFragment : Fragment() {
     @Composable
     @Preview
     private fun CommandPointsPreview() {
-        MaterialTheme() {
+        AosTrackerTheme {
             CommandPointControl(userName = "Marcel")
         }
     }

@@ -29,6 +29,7 @@ import androidx.fragment.app.activityViewModels
 import de.embrandt.aostracker.GameData
 import de.embrandt.aostracker.ui.pregame.DatePickerFragment
 import de.embrandt.aostracker.ui.pregame.PreGameViewModel
+import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
 class PureComposePregameFragment : Fragment() {
 
@@ -46,7 +47,7 @@ class PureComposePregameFragment : Fragment() {
             )
 
             setContent {
-                MaterialTheme {
+                AosTrackerTheme {
                     Surface {
                         PregameScreen(notificationsViewModel.gameData, { notificationsViewModel.onGameDataChanged(it) })
                         // TODO fill with pregame stuff
@@ -155,6 +156,8 @@ private fun PregameTextField(value : String, onValueChange : (String) -> Unit, l
     @Composable
     private fun PreViewScreen() {
         val gameData = GameData(null, playerName = "Marcel")
-        PregameScreen(gameData, gameDataChange = {})
+        AosTrackerTheme {
+            PregameScreen(gameData, gameDataChange = {})
+        }
     }
 }
