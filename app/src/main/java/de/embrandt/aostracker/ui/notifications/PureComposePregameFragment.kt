@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.embrandt.aostracker.GameData
-import de.embrandt.aostracker.ui.pregame.DatePickerFragment
+//import de.embrandt.aostracker.ui.pregame.DatePickerFragment
 import de.embrandt.aostracker.ui.pregame.PreGameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
@@ -46,11 +46,11 @@ import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
 
 //    @android:drawable/ic_menu_my_calendar
-private fun selectDate(manager : FragmentManager) {
+private fun selectDate() {
     Log.i("PregameFragment", "open dialog here")
-    val newFragment = DatePickerFragment()
+//    val newFragment = DatePickerFragment()
 //    val parentFragmentManager = null
-    newFragment.show(manager, "datepicker")
+//    newFragment.show(manager, "datepicker")
     // todo change to compose stuff
 }
 
