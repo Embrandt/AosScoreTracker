@@ -29,9 +29,6 @@ class PreGameViewModel : ViewModel() {
     fun onGameDataChanged(newData : GameData) {
         gameData = newData
     }
-    fun setBattleDate(year: Int, month: Int, dayOfMont: Int) {
-        onGameDataChanged(gameData.copy(battleDate = LocalDate.of(year, month, dayOfMont)))
-    }
 
     private var currentTurnNumber by mutableStateOf(0)
 

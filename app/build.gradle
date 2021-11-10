@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.material:material:1.4.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
@@ -67,8 +68,8 @@ dependencies {
     // Material Design
     implementation "androidx.compose.material:material:$compose_version" // used
     // Material design icons
-    implementation "androidx.compose.material:material-icons-core:$compose_version"
-    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "androidx.compose.material:material-icons-core:$compose_version" // used
+//    implementation "androidx.compose.material:material-icons-extended:$compose_version"
     // Integration with activities
     implementation "androidx.activity:activity-compose:1.4.0" // used
     // Integration with ViewModels

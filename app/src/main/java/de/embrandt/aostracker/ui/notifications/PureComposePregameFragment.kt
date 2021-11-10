@@ -1,6 +1,5 @@
 package de.embrandt.aostracker.ui.notifications
 
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,12 +19,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.material.datepicker.MaterialDatePicker
 import de.embrandt.aostracker.GameData
-//import de.embrandt.aostracker.ui.pregame.DatePickerFragment
 import de.embrandt.aostracker.ui.pregame.PreGameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.*
 
 //@Composable
 //fun ExperimentalStuff() {
@@ -45,18 +47,21 @@ import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 //}
 
 
-//    @android:drawable/ic_menu_my_calendar
-private fun selectDate() {
-    Log.i("PregameFragment", "open dialog here")
-//    val newFragment = DatePickerFragment()
-//    val parentFragmentManager = null
-//    newFragment.show(manager, "datepicker")
-    // todo change to compose stuff
+private fun selectDate(context: AppCompatActivity, updateDate: (LocalDate) -> Unit) {
+    val picker = MaterialDatePicker.Builder.datePicker().build()
+    picker.show(context.supportFragmentManager, picker.toString())
+    picker.addOnPositiveButtonClickListener {
+        val instance = Calendar.getInstance()
+        instance.timeInMillis = it
+        val date: LocalDate =
+            Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+        updateDate(date)
+    }
 }
 
 //    @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun PregameTextField(value : String, onValueChange : (String) -> Unit, label : String) {
+private fun PregameTextField(value: String, onValueChange: (String) -> Unit, label: String) {
     val focusManager = LocalFocusManager.current
 
     TextField(
@@ -79,13 +84,17 @@ fun PregameScreen() {
     val viewModel: PreGameViewModel = viewModel(LocalContext.current as AppCompatActivity)
     PregameContent(gamedata = viewModel.gameData, gameDataChange = viewModel::onGameDataChanged)
 }
+
 @Composable
-fun PregameContent(gamedata : GameData, gameDataChange : (GameData) -> Unit) {
-    Column (
+fun PregameContent(gamedata: GameData, gameDataChange: (GameData) -> Unit) {
+    val activity = LocalContext.current as AppCompatActivity
+    Column(
         Modifier
             .fillMaxWidth()
-            .padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top){
-//                Log.i("Tag", this.)
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
         TextField(value = gamedata.battleDateText,
             onValueChange = {},
             Modifier
@@ -93,7 +102,13 @@ fun PregameContent(gamedata : GameData, gameDataChange : (GameData) -> Unit) {
                 .padding(top = 8.dp),
             label = { Text("BattleDate") },
             trailingIcon = {
-                IconButton(onClick = {  }) {
+                IconButton(
+                    onClick = {
+                        selectDate(
+                            context = activity,
+                            updateDate = { gameDataChange(gamedata.copy(battleDate = it)) }
+                        )
+                    }) {
                     Icon(Icons.Filled.DateRange, contentDescription = "")
                 }
             })
@@ -114,21 +129,22 @@ fun PregameContent(gamedata : GameData, gameDataChange : (GameData) -> Unit) {
         )
         PregameTextField(
             value = gamedata.opponentName,
-            onValueChange = {gameDataChange(gamedata.copy(opponentName = it)) },
+            onValueChange = { gameDataChange(gamedata.copy(opponentName = it)) },
             label = "Opponents' Name"
         )
         PregameTextField(
             value = gamedata.opponentFaction,
-            onValueChange = {gameDataChange(gamedata.copy(opponentFaction = it)) },
+            onValueChange = { gameDataChange(gamedata.copy(opponentFaction = it)) },
             label = "Opponents' Faction"
         )
         PregameTextField(
             value = gamedata.opponentGrandStrategy,
-            onValueChange = {gameDataChange(gamedata.copy(opponentGrandStrategy = it)) },
+            onValueChange = { gameDataChange(gamedata.copy(opponentGrandStrategy = it)) },
             label = "Opponents' Grand Strategy"
         )
     }
 }
+
 @Preview
 @Composable
 private fun PreViewScreen() {
