@@ -2,34 +2,90 @@ package de.embrandt.aostracker
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import de.embrandt.aostracker.databinding.ActivityMainBinding
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import de.embrandt.aostracker.ui.home.TurnScreenStart
+import de.embrandt.aostracker.ui.notifications.PregameScreen
+import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContent {
+            AosTrackerTheme {
+                MainApp()
+            }
+        }
+    }
+}
 
-        val navView: BottomNavigationView = binding.navView
+@Composable
+fun MainApp() {
+    val navController = rememberNavController()
+    Scaffold(
+        bottomBar = {
+            BottomBar(navController)
+        }
+    ) {
+        BottomBarMain(navController = navController)
+    }
+}
 
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_turn, R.id.navigation_notifications
+@Composable
+fun BottomBar(navController: NavHostController) {
+    val items = listOf(Screen.Pregame, Screen.Turn)
+
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    BottomNavigation() {
+        items.map {
+            BottomNavigationItem(
+                icon = { Icon(painterResource(id = it.icon), contentDescription = null) },
+                label = { Text(stringResource(it.resourceId)) },
+                selected = currentRoute == it.route,
+                onClick = { navController.navigate(it.route) }
             )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        }
+    }
+}
+
+@Composable
+fun BottomBarMain(navController: NavHostController) {
+    NavHost(
+        navController,
+        startDestination = Screen.Pregame.route
+    ) {
+        composable(Screen.Pregame.route) {
+            PregameScreen()
+        }
+        composable(Screen.Turn.route) {
+            TurnScreenStart()
+        }
+    }
+}
+
+sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val icon: Int) {
+    object Pregame : Screen("pregame", R.string.title_pregame, R.drawable.ic_home_black_24dp)
+    object Turn : Screen("turns", R.string.title_turn_display, R.drawable.ic_dashboard_black_24dp)
+}
+
+@Preview
+@Composable
+private fun PreviewMainApp() {
+    AosTrackerTheme {
+        MainApp()
     }
 }
