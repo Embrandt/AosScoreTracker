@@ -7,11 +7,11 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,7 +20,6 @@ import de.embrandt.aostracker.TurnData
 import de.embrandt.aostracker.ui.pregame.PreGameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
-
 @Composable
 fun TurnScreenStart() {
     val turnViewModel: PreGameViewModel = viewModel(LocalContext.current as AppCompatActivity)
@@ -28,44 +27,89 @@ fun TurnScreenStart() {
         turnViewModel.gameData.playerName,
         turnViewModel.gameData.opponentName,
         turnViewModel.currentTurn!!,
-        turnViewModel::onTurnDataChanged
+        turnViewModel::onTurnDataChanged,
+        turnViewModel::onTurnChange
     )
 }
 
+@Composable
+fun TurnTopBar(turnNumber: Int, onTurnChange: (Int) -> Unit) {
+    // TODO  implement dropdown
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(0.dp)
+    ) {
+        TopAppBar(
+            modifier = Modifier.height(42.dp),
+            navigationIcon = {
+                IconButton(
+                    enabled = turnNumber != 1,
+                    onClick = { onTurnChange(turnNumber - 1) },
+                    modifier = Modifier.alpha(0.5f)
+                ) {
+                    Icon(Icons.Outlined.ArrowLeft, contentDescription = null)
+                }
+
+            },
+            actions = {
+                IconButton(enabled = turnNumber != 5, onClick = { onTurnChange(turnNumber + 1) }) {
+                    Icon(Icons.Outlined.ArrowRight, contentDescription = null)
+                }
+            },
+            title = {
+                TextButton(modifier = Modifier.weight(1f), onClick = { onTurnChange(turnNumber) }) {
+                    Text(text = "Turn $turnNumber")
+                    Icon(Icons.Outlined.ArrowDropDownCircle, contentDescription = null)
+                }
+            }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+    }
+
+}
 
 @Composable
 private fun TurnScreen(
     myName: String,
     opponentName: String,
     turnInfo: TurnData,
-    onTurnDataChange: (TurnData) -> Unit
+    onTurnDataChange: (TurnData) -> Unit,
+    onTurnChange: (Int) -> Unit
 ) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        TextField(
-            value = turnInfo.turnNumber.toString(),
-            onValueChange = {},
-            modifier = Modifier
+    Column {
+        TurnTopBar(
+            turnNumber = turnInfo.turnNumber,
+            onTurnChange = { onTurnChange(it) })
+        Column(
+            Modifier
                 .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
-            readOnly = true
-        )
-        RollOff(
-            playerFirstTurn = turnInfo.playerHasFirstTurn,
-            hasFirstTurnChanged = { onTurnDataChange(turnInfo.copy(playerHasFirstTurn = it)) }
-        )
-        if (turnInfo.playerHasFirstTurn == true) {
-            CommandPointControl(myName)
-            CommandPointControl(opponentName)
-        } else {
+                .padding(8.dp)
+//                .padding(it)
+        ) {
 
-            CommandPointControl(opponentName)
-            CommandPointControl(myName)
+            TextField(
+                value = turnInfo.turnNumber.toString(),
+                onValueChange = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
+                readOnly = true
+            )
+            RollOff(
+                playerFirstTurn = turnInfo.playerHasFirstTurn,
+                hasFirstTurnChanged = { onTurnDataChange(turnInfo.copy(playerHasFirstTurn = it)) }
+            )
+            if (turnInfo.playerHasFirstTurn == true) {
+                CommandPointControl(myName)
+                CommandPointControl(opponentName)
+            } else {
+
+                CommandPointControl(opponentName)
+                CommandPointControl(myName)
+            }
+            BattleTacticChooser()
         }
-        BattleTacticChooser()
     }
 }
 
@@ -184,6 +228,12 @@ private fun CommandPointControl(userName: String) {
 
 @Preview
 @Composable
+fun PreviewTurnTopBar() {
+    TurnTopBar(turnNumber = 2, onTurnChange = {})
+}
+
+@Preview
+@Composable
 fun PreviewBattleTacticMenu() {
     //TODO make preview work
     Box {
@@ -206,7 +256,7 @@ fun PreviewBattleTacticChooser() {
 private fun TurnScreenPreview() {
     val turnData = TurnData(1, true)
     AosTrackerTheme {
-        TurnScreen(myName = "Marcel", opponentName = "Bastl", turnData, {})
+        TurnScreen(myName = "Marcel", opponentName = "Bastl", turnData, {}, {})
     }
 }
 

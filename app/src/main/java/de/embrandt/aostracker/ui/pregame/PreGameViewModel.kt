@@ -26,7 +26,7 @@ class PreGameViewModel : ViewModel() {
     }
 
     var gameData by mutableStateOf<GameData>(GameData(LocalDate.now()))
-    fun onGameDataChanged(newData : GameData) {
+    fun onGameDataChanged(newData: GameData) {
         gameData = newData
     }
 
@@ -40,6 +40,10 @@ class PreGameViewModel : ViewModel() {
             "You can only change data of the current turn"
         }
         turnStats[currentTurnNumber] = turnData
+    }
+
+    fun onTurnChange(turnNumber: Int) {
+        currentTurnNumber = turnNumber - 1
     }
 
 

@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 fun MainApp() {
     val navController = rememberNavController()
     Scaffold(
+//        topBar = { TopAppBar(title = {Text("Great Title")}) }, TODO add title
         bottomBar = {
             BottomBar(navController)
         }

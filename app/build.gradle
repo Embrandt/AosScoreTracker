@@ -66,7 +66,7 @@ dependencies {
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     implementation "androidx.compose.foundation:foundation:$compose_version" // used
     // Material Design
-    implementation "androidx.compose.material:material:$compose_version" // used
+    implementation "androidx.compose.material:material:$compose_version" // used1.1.0-beta02
     // Material design icons
     implementation "androidx.compose.material:material-icons-core:$compose_version" // used
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
@@ -77,6 +77,7 @@ dependencies {
     // Integration with observables
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "androidx.compose.runtime:runtime-rxjava2:$compose_version"
+//    implementation "androidx.compose.material3:material3:1.0.0-alpha01"
 
     // UI Tests
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
