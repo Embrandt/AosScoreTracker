@@ -1,12 +1,15 @@
 package de.embrandt.aostracker.ui.home
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.RadioButton
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -16,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import de.embrandt.aostracker.TurnData
 import de.embrandt.aostracker.ui.pregame.PreGameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
+
 
 @Composable
 fun TurnScreenStart() {
@@ -53,8 +57,15 @@ private fun TurnScreen(
             playerFirstTurn = turnInfo.playerHasFirstTurn,
             hasFirstTurnChanged = { onTurnDataChange(turnInfo.copy(playerHasFirstTurn = it)) }
         )
-        CommandPointControl(myName)
-        CommandPointControl(opponentName)
+        if (turnInfo.playerHasFirstTurn == true) {
+            CommandPointControl(myName)
+            CommandPointControl(opponentName)
+        } else {
+
+            CommandPointControl(opponentName)
+            CommandPointControl(myName)
+        }
+        BattleTacticChooser()
     }
 }
 
@@ -86,8 +97,77 @@ private fun RollOff(playerFirstTurn: Boolean?, hasFirstTurnChanged: (Boolean) ->
 
 @Composable
 private fun BattleTacticChooser() {
-    //TODO implement battle tactic to choose
+    // TODO move to parameter
+    val tactics = listOf(
+        "Ihre Reihen Zerschmettern",
+        "Erobern",
+        "Den Kriegsherr töten",
+        "Entschlossener Vorstoß",
+        "Bringt es zur Strecke",
+        "Aggresive Expansion",
+        "Monströse Übernahme",
+        "Wilde Speerspitze"
+    )
+    var checked by remember { mutableStateOf(false) }
+    // TODO move to turndata
+    var selectedTactic by remember {
+        mutableStateOf("BattleTactic")
+    }
+    TextField(
+        value = selectedTactic,
+        onValueChange = {},
+        readOnly = true,
+        trailingIcon = {
+            IconToggleButton(
+                checked = checked,
+                onCheckedChange = { checked = !checked }
+            ) {
+                Icon(Icons.Default.ArrowDropDown, contentDescription = "")
+            }
+        },
+        label =
+        when {
+            checked -> {
+                {
+                    BattleTacticDropdown(
+                        availableTactics = tactics,
+                        expanded = checked,
+                        onDismiss = { chosenTactic ->
+                            selectedTactic = chosenTactic
+                            checked = false
+                        }
+                    )
+                }
+            }
+            else -> null
+        }
+    )
 }
+
+
+@Composable
+fun BattleTacticDropdown(
+    availableTactics: List<String>,
+    expanded: Boolean,
+    onDismiss: (String) -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { onDismiss("nix") }) {
+        availableTactics.map {
+            DropdownMenuItem(onClick = { onDismiss(it) }) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(it)
+                    // TODO display explanation
+                    IconButton(onClick = { Log.i("Pregame", "clicked help") }) {
+                        Icon(Icons.Outlined.HelpOutline, contentDescription = "")
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 private fun CommandPointControl(userName: String) {
@@ -100,6 +180,25 @@ private fun CommandPointControl(userName: String) {
             Text("Gained - 0 +")
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewBattleTacticMenu() {
+    //TODO make preview work
+    Box {
+        BattleTacticDropdown(
+            availableTactics = listOf("Erst dies", "dann das", "dann jenes"),
+            expanded = true,
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewBattleTacticChooser() {
+    BattleTacticChooser()
 }
 
 @Composable
