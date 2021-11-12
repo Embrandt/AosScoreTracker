@@ -1,10 +1,8 @@
 package de.embrandt.aostracker.ui.pregame
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import de.embrandt.aostracker.GameData
 import de.embrandt.aostracker.PlayerTurn
@@ -16,13 +14,25 @@ class PreGameViewModel : ViewModel() {
     var turnStats = mutableStateListOf<TurnData>()
         private set
 
+    // TODO initialize from mission
+    private val scoringOptionsPlayer = listOf(
+        Score("Battle Tactic scored", false), Score("Hold 1", false),
+        Score("Hold 2+", false), Score("Hold more", false)
+    )
+    private val tactics = listOf(
+        "Ihre Reihen Zerschmettern",
+        "Erobern",
+        "Den Kriegsherr töten",
+        "Entschlossener Vorstoß",
+        "Bringt es zur Strecke",
+        "Aggresive Expansion",
+        "Monströse Übernahme",
+        "Wilde Speerspitze"
+    )
+
     private fun initializeTurns() {
         for (i in 1..5) {
-            // TODO initialize from mission
-            val scoringOptionsPlayer = listOf(
-                Score("Battle Tactic scored", false), Score("Hold 1", false),
-                Score("Hold 2+", false), Score("Hold more", false)
-            )
+
             val playerTurn = PlayerTurn(scores = scoringOptionsPlayer, null)
             val opponentTurn = PlayerTurn(scores = scoringOptionsPlayer, null)
             val turnData = TurnData(i, playerTurn, opponentTurn)
@@ -44,6 +54,22 @@ class PreGameViewModel : ViewModel() {
 
     val currentTurn: TurnData?
         get() = turnStats.getOrNull(currentTurnNumber)
+
+    val availablePlayerTactics: List<String> by derivedStateOf {
+        val available = tactics.toMutableList()
+        for (i in 0 until currentTurnNumber) {
+            available.remove(turnStats[i].playerData.battleTactic)
+        }
+        return@derivedStateOf available
+    }
+
+    val availableOpponentTactics: State<List<String>> = derivedStateOf {
+        val available = tactics.toMutableList()
+        for (turnData in turnStats) {
+            available.remove(turnData.opponentData.battleTactic)
+        }
+        return@derivedStateOf available
+    }
 
     fun onTurnDataChanged(turnData: TurnData) {
         require(currentTurn?.turnNumber == turnData.turnNumber) {

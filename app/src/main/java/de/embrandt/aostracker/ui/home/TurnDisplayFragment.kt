@@ -7,7 +7,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.outlined.ArrowDropDownCircle
+import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.ArrowLeft
 import androidx.compose.material.icons.outlined.ArrowRight
 import androidx.compose.material.icons.outlined.HelpOutline
@@ -35,7 +35,8 @@ fun TurnScreenStart() {
         turnViewModel::onTurnDataChanged,
         turnViewModel::onTurnChange,
         turnViewModel::onPlayerScoreChange,
-        turnViewModel::onOpponentScoreChange
+        turnViewModel::onOpponentScoreChange,
+        turnViewModel.availablePlayerTactics
     )
 }
 
@@ -67,7 +68,7 @@ fun TurnTopBar(turnNumber: Int, onTurnChange: (Int) -> Unit) {
             title = {
                 TextButton(modifier = Modifier.weight(1f), onClick = { onTurnChange(turnNumber) }) {
                     Text(text = "Turn $turnNumber")
-                    Icon(Icons.Outlined.ArrowDropDownCircle, contentDescription = null)
+                    Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
                 }
             }
         )
@@ -84,7 +85,8 @@ private fun TurnScreen(
     onTurnDataChange: (TurnData) -> Unit,
     onTurnChange: (Int) -> Unit,
     onPlayerScoreChange: (List<Score>) -> Unit,
-    onOpponentScoreChange: (List<Score>) -> Unit
+    onOpponentScoreChange: (List<Score>) -> Unit,
+    availablePlayerTactics: List<String>
 ) {
     Column {
         TurnTopBar(
@@ -94,7 +96,6 @@ private fun TurnScreen(
             Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
-//                .padding(it)
         ) {
 
             RollOff(
@@ -109,7 +110,19 @@ private fun TurnScreen(
                 CommandPointControl(opponentName)
                 CommandPointControl(myName)
             }
-            BattleTacticChooser()
+            BattleTacticChooser(
+                availableTactics = availablePlayerTactics,
+                selectedTactic = turnInfo.playerData.battleTactic ?: "Battle Tactic",
+                onTacticChosen = {
+                    onTurnDataChange(
+                        turnInfo.copy(
+                            playerData = turnInfo.playerData.copy(
+                                battleTactic = it
+                            )
+                        )
+                    )
+                }
+            )
             Row {
                 PointScoring(
                     myName,
@@ -169,7 +182,7 @@ fun ScoringOption(scoringOpting: String, scored: Boolean, onScoredChange: (Boole
 @Preview
 @Composable
 fun PreviewPointScoring() {
-    val scoringOptions = listOf<Score>(
+    val scoringOptions = listOf(
         Score("Battle Tactic scored", false), Score("Hold 1", false),
         Score("Hold 2+", false), Score("Hold more", false)
     )
@@ -200,23 +213,12 @@ private fun RollOff(playerFirstTurn: Boolean?, hasFirstTurnChanged: (Boolean) ->
 }
 
 @Composable
-private fun BattleTacticChooser() {
-    // TODO move to parameter
-    val tactics = listOf(
-        "Ihre Reihen Zerschmettern",
-        "Erobern",
-        "Den Kriegsherr töten",
-        "Entschlossener Vorstoß",
-        "Bringt es zur Strecke",
-        "Aggresive Expansion",
-        "Monströse Übernahme",
-        "Wilde Speerspitze"
-    )
+private fun BattleTacticChooser(
+    availableTactics: List<String>,
+    selectedTactic: String,
+    onTacticChosen: (String) -> Unit
+) {
     var checked by remember { mutableStateOf(false) }
-    // TODO move to turndata
-    var selectedTactic by remember {
-        mutableStateOf("BattleTactic")
-    }
     TextField(
         value = selectedTactic,
         onValueChange = {},
@@ -234,10 +236,10 @@ private fun BattleTacticChooser() {
             checked -> {
                 {
                     BattleTacticDropdown(
-                        availableTactics = tactics,
+                        availableTactics = availableTactics,
                         expanded = checked,
                         onDismiss = { chosenTactic ->
-                            selectedTactic = chosenTactic
+                            chosenTactic?.apply { onTacticChosen(chosenTactic) }
                             checked = false
                         }
                     )
@@ -253,11 +255,11 @@ private fun BattleTacticChooser() {
 fun BattleTacticDropdown(
     availableTactics: List<String>,
     expanded: Boolean,
-    onDismiss: (String) -> Unit
+    onDismiss: (String?) -> Unit
 ) {
     DropdownMenu(
         expanded = expanded,
-        onDismissRequest = { onDismiss("nix") }) {
+        onDismissRequest = { onDismiss(null) }) {
         availableTactics.map {
             DropdownMenuItem(onClick = { onDismiss(it) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -310,20 +312,24 @@ fun PreviewBattleTacticMenu() {
 @Preview
 @Composable
 fun PreviewBattleTacticChooser() {
-    BattleTacticChooser()
+    BattleTacticChooser(
+        availableTactics = listOf("Tactic A", "Tactic B"),
+        selectedTactic = "Chosen Tactic",
+        onTacticChosen = {})
 }
 
 @Composable
 @Preview
 private fun TurnScreenPreview() {
-    val scoringOptions = listOf<Score>(
+    val scoringOptions = listOf(
         Score("Battle Tactic scored", false), Score("Hold 1", false),
         Score("Hold 2+", false), Score("Hold more", false)
     )
     val playerTurn = PlayerTurn(scoringOptions, null)
     val turnData = TurnData(1, playerTurn, playerTurn)
     AosTrackerTheme {
-        TurnScreen(myName = "Marcel", opponentName = "Bastl", turnData, {}, {}, {}, {})
+        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf("Available")
+        )
     }
 }
 
