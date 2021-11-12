@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import de.embrandt.aostracker.GameData
+import de.embrandt.aostracker.PlayerTurn
+import de.embrandt.aostracker.Score
 import de.embrandt.aostracker.TurnData
 import java.time.LocalDate
 
@@ -16,7 +18,15 @@ class PreGameViewModel : ViewModel() {
 
     private fun initializeTurns() {
         for (i in 1..5) {
-            turnStats.add(TurnData(i))
+            // TODO initialize from mission
+            val scoringOptionsPlayer = listOf(
+                Score("Battle Tactic scored", false), Score("Hold 1", false),
+                Score("Hold 2+", false), Score("Hold more", false)
+            )
+            val playerTurn = PlayerTurn(scores = scoringOptionsPlayer, null)
+            val opponentTurn = PlayerTurn(scores = scoringOptionsPlayer, null)
+            val turnData = TurnData(i, playerTurn, opponentTurn)
+            turnStats.add(turnData)
         }
     }
 
@@ -46,5 +56,18 @@ class PreGameViewModel : ViewModel() {
         currentTurnNumber = turnNumber - 1
     }
 
+    fun onPlayerScoreChange(newScores: List<Score>) {
+        currentTurn?.let {
+            val changedTurnData = it.copy(playerData = it.playerData.copy(scores = newScores))
+            onTurnDataChanged(changedTurnData)
+        }
+    }
+
+    fun onOpponentScoreChange(newScores: List<Score>) {
+        currentTurn?.let {
+            val changedTurnData = it.copy(opponentData = it.opponentData.copy(scores = newScores))
+            onTurnDataChanged(changedTurnData)
+        }
+    }
 
 }

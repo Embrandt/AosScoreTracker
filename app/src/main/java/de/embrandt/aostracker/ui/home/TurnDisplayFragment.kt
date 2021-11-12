@@ -7,7 +7,10 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.ArrowDropDownCircle
+import androidx.compose.material.icons.outlined.ArrowLeft
+import androidx.compose.material.icons.outlined.ArrowRight
+import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,6 +19,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import de.embrandt.aostracker.PlayerTurn
+import de.embrandt.aostracker.Score
 import de.embrandt.aostracker.TurnData
 import de.embrandt.aostracker.ui.pregame.PreGameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
@@ -28,7 +33,9 @@ fun TurnScreenStart() {
         turnViewModel.gameData.opponentName,
         turnViewModel.currentTurn!!,
         turnViewModel::onTurnDataChanged,
-        turnViewModel::onTurnChange
+        turnViewModel::onTurnChange,
+        turnViewModel::onPlayerScoreChange,
+        turnViewModel::onOpponentScoreChange
     )
 }
 
@@ -75,7 +82,9 @@ private fun TurnScreen(
     opponentName: String,
     turnInfo: TurnData,
     onTurnDataChange: (TurnData) -> Unit,
-    onTurnChange: (Int) -> Unit
+    onTurnChange: (Int) -> Unit,
+    onPlayerScoreChange: (List<Score>) -> Unit,
+    onOpponentScoreChange: (List<Score>) -> Unit
 ) {
     Column {
         TurnTopBar(
@@ -88,14 +97,6 @@ private fun TurnScreen(
 //                .padding(it)
         ) {
 
-            TextField(
-                value = turnInfo.turnNumber.toString(),
-                onValueChange = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally),
-                readOnly = true
-            )
             RollOff(
                 playerFirstTurn = turnInfo.playerHasFirstTurn,
                 hasFirstTurnChanged = { onTurnDataChange(turnInfo.copy(playerHasFirstTurn = it)) }
@@ -109,13 +110,72 @@ private fun TurnScreen(
                 CommandPointControl(myName)
             }
             BattleTacticChooser()
+            Row {
+                PointScoring(
+                    myName,
+                    turnInfo.playerData.scores,
+                    { onPlayerScoreChange(it) },
+                    Modifier.weight(1f)
+                )
+                PointScoring(
+                    opponentName,
+                    turnInfo.opponentData.scores,
+                    { onOpponentScoreChange(it) },
+                    Modifier.weight(1f)
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun PointScoring() {
-    // TODO implement scoring checkboxes
+private fun PointScoring(
+    playerName: String,
+    scores: List<Score>,
+    onScoreChange: (List<Score>) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier.padding(8.dp)) {
+        Text(text = playerName)
+        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
+        scores.map { score ->
+            ScoringOption(
+                scoringOpting = score.scoringOption,
+                scored = score.scored,
+                onScoredChange = {
+                    val newScores = mutableListOf<Score>()
+                    for (oldScore in scores) {
+                        if (oldScore.scoringOption == score.scoringOption) {
+                            newScores.add(oldScore.copy(scored = it))
+                        } else {
+                            newScores.add(oldScore)
+                        }
+                    }
+                    onScoreChange(newScores)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun ScoringOption(scoringOpting: String, scored: Boolean, onScoredChange: (Boolean) -> Unit) {
+    Row {
+        Checkbox(checked = scored, onCheckedChange = onScoredChange)
+        Text(text = scoringOpting)
+    }
+}
+
+@Preview
+@Composable
+fun PreviewPointScoring() {
+    val scoringOptions = listOf<Score>(
+        Score("Battle Tactic scored", false), Score("Hold 1", false),
+        Score("Hold 2+", false), Score("Hold more", false)
+    )
+    AosTrackerTheme {
+        PointScoring(playerName = "Player", scoringOptions, {})
+    }
 }
 
 @Composable
@@ -229,7 +289,9 @@ private fun CommandPointControl(userName: String) {
 @Preview
 @Composable
 fun PreviewTurnTopBar() {
-    TurnTopBar(turnNumber = 2, onTurnChange = {})
+    AosTrackerTheme {
+        TurnTopBar(turnNumber = 2, onTurnChange = {})
+    }
 }
 
 @Preview
@@ -254,9 +316,14 @@ fun PreviewBattleTacticChooser() {
 @Composable
 @Preview
 private fun TurnScreenPreview() {
-    val turnData = TurnData(1, true)
+    val scoringOptions = listOf<Score>(
+        Score("Battle Tactic scored", false), Score("Hold 1", false),
+        Score("Hold 2+", false), Score("Hold more", false)
+    )
+    val playerTurn = PlayerTurn(scoringOptions, null)
+    val turnData = TurnData(1, playerTurn, playerTurn)
     AosTrackerTheme {
-        TurnScreen(myName = "Marcel", opponentName = "Bastl", turnData, {}, {})
+        TurnScreen(myName = "Marcel", opponentName = "Bastl", turnData, {}, {}, {}, {})
     }
 }
 
