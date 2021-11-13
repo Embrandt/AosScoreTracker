@@ -2,7 +2,6 @@ package de.embrandt.aostracker.ui.pregame
 
 import android.util.Log
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import de.embrandt.aostracker.GameData
 import de.embrandt.aostracker.PlayerTurn
@@ -63,7 +62,7 @@ class PreGameViewModel : ViewModel() {
         return@derivedStateOf available
     }
 
-    val availableOpponentTactics: State<List<String>> = derivedStateOf {
+    val availableOpponentTactics: List<String> by derivedStateOf {
         val available = tactics.toMutableList()
         for (turnData in turnStats) {
             available.remove(turnData.opponentData.battleTactic)

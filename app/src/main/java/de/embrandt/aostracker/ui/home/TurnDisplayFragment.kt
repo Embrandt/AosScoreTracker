@@ -36,7 +36,8 @@ fun TurnScreenStart() {
         turnViewModel::onTurnChange,
         turnViewModel::onPlayerScoreChange,
         turnViewModel::onOpponentScoreChange,
-        turnViewModel.availablePlayerTactics
+        turnViewModel.availablePlayerTactics,
+        turnViewModel.availableOpponentTactics
     )
 }
 
@@ -86,7 +87,8 @@ private fun TurnScreen(
     onTurnChange: (Int) -> Unit,
     onPlayerScoreChange: (List<Score>) -> Unit,
     onOpponentScoreChange: (List<Score>) -> Unit,
-    availablePlayerTactics: List<String>
+    availablePlayerTactics: List<String>,
+    availableOpponentTactics: List<String>
 ) {
     Column {
         TurnTopBar(
@@ -97,47 +99,88 @@ private fun TurnScreen(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-
             RollOff(
                 playerFirstTurn = turnInfo.playerHasFirstTurn,
                 hasFirstTurnChanged = { onTurnDataChange(turnInfo.copy(playerHasFirstTurn = it)) }
             )
             if (turnInfo.playerHasFirstTurn == true) {
-                CommandPointControl(myName)
-                CommandPointControl(opponentName)
-            } else {
-
-                CommandPointControl(opponentName)
-                CommandPointControl(myName)
-            }
-            BattleTacticChooser(
-                availableTactics = availablePlayerTactics,
-                selectedTactic = turnInfo.playerData.battleTactic ?: "Battle Tactic",
-                onTacticChosen = {
-                    onTurnDataChange(
-                        turnInfo.copy(
-                            playerData = turnInfo.playerData.copy(
-                                battleTactic = it
-                            )
-                        )
+                Row {
+                    ParticipantTurnColumn(
+                        myName = myName,
+                        availablePlayerTactics = availablePlayerTactics,
+                        turnInfo = turnInfo.playerData,
+                        onTurnDataChange = {onTurnDataChange(turnInfo.copy(playerData = it))},
+                        onPlayerScoreChange = onPlayerScoreChange,
+                        Modifier.weight(1f).padding(end = 8.dp)
+                    )
+                    ParticipantTurnColumn(
+                        myName = opponentName,
+                        availablePlayerTactics = availableOpponentTactics,
+                        turnInfo = turnInfo.opponentData,
+                        onTurnDataChange = {onTurnDataChange(turnInfo.copy(opponentData = it))},
+                        onPlayerScoreChange = onOpponentScoreChange,
+                        Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
                     )
                 }
-            )
-            Row {
-                PointScoring(
-                    myName,
-                    turnInfo.playerData.scores,
-                    { onPlayerScoreChange(it) },
-                    Modifier.weight(1f)
-                )
-                PointScoring(
-                    opponentName,
-                    turnInfo.opponentData.scores,
-                    { onOpponentScoreChange(it) },
-                    Modifier.weight(1f)
-                )
+            } else {
+                Row {
+                    ParticipantTurnColumn(
+                        myName = opponentName,
+                        availablePlayerTactics = availableOpponentTactics,
+                        turnInfo = turnInfo.opponentData,
+                        onTurnDataChange = {onTurnDataChange(turnInfo.copy(opponentData = it))},
+                        onPlayerScoreChange = onOpponentScoreChange,
+                        Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp)
+                    )
+                    ParticipantTurnColumn(
+                        myName = myName,
+                        availablePlayerTactics = availablePlayerTactics,
+                        turnInfo = turnInfo.playerData,
+                        onTurnDataChange = {onTurnDataChange(turnInfo.copy(playerData = it))},
+                        onPlayerScoreChange = onPlayerScoreChange,
+                        Modifier.weight(1f).padding(start = 8.dp)
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+fun ParticipantTurnColumn(
+    myName: String,
+    availablePlayerTactics: List<String>,
+    turnInfo: PlayerTurn,
+    onTurnDataChange: (PlayerTurn) -> Unit,
+    onPlayerScoreChange: (List<Score>) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        Text(text = myName)
+        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
+        CommandPointControl()
+        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
+        BattleTacticChooser(
+            availableTactics = availablePlayerTactics,
+            selectedTactic = turnInfo.battleTactic?:"Battle Tactic",
+            onTacticChosen = {
+                onTurnDataChange(
+                    turnInfo.copy(
+                        battleTactic = it
+                    )
+                )
+            }
+        )
+        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
+        PointScoring(
+            myName,
+            turnInfo.scores,
+            { onPlayerScoreChange(it) }
+        )
     }
 }
 
@@ -176,18 +219,6 @@ fun ScoringOption(scoringOpting: String, scored: Boolean, onScoredChange: (Boole
     Row {
         Checkbox(checked = scored, onCheckedChange = onScoredChange)
         Text(text = scoringOpting)
-    }
-}
-
-@Preview
-@Composable
-fun PreviewPointScoring() {
-    val scoringOptions = listOf(
-        Score("Battle Tactic scored", false), Score("Hold 1", false),
-        Score("Hold 2+", false), Score("Hold more", false)
-    )
-    AosTrackerTheme {
-        PointScoring(playerName = "Player", scoringOptions, {})
     }
 }
 
@@ -250,7 +281,6 @@ private fun BattleTacticChooser(
     )
 }
 
-
 @Composable
 fun BattleTacticDropdown(
     availableTactics: List<String>,
@@ -274,17 +304,27 @@ fun BattleTacticDropdown(
     }
 }
 
-
 @Composable
-private fun CommandPointControl(userName: String) {
+private fun CommandPointControl() {
     Column {
-        Text(userName)
         Row {
             //TODO spent
             Text("Spent - 0 +")
             // TODO GAINED
             Text("Gained - 0 +")
         }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewPointScoring() {
+    val scoringOptions = listOf(
+        Score("Battle Tactic scored", false), Score("Hold 1", false),
+        Score("Hold 2+", false), Score("Hold more", false)
+    )
+    AosTrackerTheme {
+        PointScoring(playerName = "Player", scoringOptions, {})
     }
 }
 
@@ -328,7 +368,7 @@ private fun TurnScreenPreview() {
     val playerTurn = PlayerTurn(scoringOptions, null)
     val turnData = TurnData(1, playerTurn, playerTurn)
     AosTrackerTheme {
-        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf("Available")
+        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf("Available"), listOf("Other")
         )
     }
 }
@@ -337,6 +377,6 @@ private fun TurnScreenPreview() {
 @Preview
 private fun CommandPointsPreview() {
     AosTrackerTheme {
-        CommandPointControl(userName = "Marcel")
+        CommandPointControl()
     }
 }
