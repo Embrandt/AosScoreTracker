@@ -112,7 +112,9 @@ private fun TurnScreen(
                         turnInfo = turnInfo.playerData,
                         onTurnDataChange = {onTurnDataChange(turnInfo.copy(playerData = it))},
                         onPlayerScoreChange = onPlayerScoreChange,
-                        Modifier.weight(1f).padding(end = 8.dp)
+                        Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp)
                     )
                     ParticipantTurnColumn(
                         participantName = opponentName,
@@ -122,7 +124,7 @@ private fun TurnScreen(
                         onPlayerScoreChange = onOpponentScoreChange,
                         Modifier
                             .weight(1f)
-                            .padding(start = 8.dp)
+
                     )
                 }
             } else {
@@ -143,7 +145,7 @@ private fun TurnScreen(
                         turnInfo = turnInfo.playerData,
                         onTurnDataChange = {onTurnDataChange(turnInfo.copy(playerData = it))},
                         onPlayerScoreChange = onPlayerScoreChange,
-                        Modifier.weight(1f).padding(start = 8.dp)
+                        Modifier.weight(1f)
                     )
                 }
             }
@@ -164,7 +166,6 @@ fun ParticipantTurnColumn(
         Text(text = participantName)
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         CommandPointControl(turnInfo, onTurnDataChange)
-        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         BattleTacticChooser(
             availableTactics = availableTactics,
             selectedTactic = turnInfo.battleTactic?:"Battle Tactic",
@@ -176,9 +177,7 @@ fun ParticipantTurnColumn(
                 )
             }
         )
-        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         PointScoring(
-            participantName,
             turnInfo.scores,
             { onPlayerScoreChange(it) }
         )
@@ -187,13 +186,12 @@ fun ParticipantTurnColumn(
 
 @Composable
 private fun PointScoring(
-    playerName: String,
     scores: List<Score>,
     onScoreChange: (List<Score>) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.padding(8.dp)) {
-        Text(text = playerName)
+    Column(modifier.padding(top=16.dp)) {
+        Text(text = "Objectives scored", style= MaterialTheme.typography.subtitle2)
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         scores.map { score ->
             ScoringOption(
@@ -217,7 +215,10 @@ private fun PointScoring(
 
 @Composable
 fun ScoringOption(scoringOpting: String, scored: Boolean, onScoredChange: (Boolean) -> Unit) {
-    Row (Modifier.fillMaxWidth(1f).clickable { onScoredChange(!scored) }){
+    Row (
+        Modifier
+            .fillMaxWidth(1f)
+            .clickable { onScoredChange(!scored) }){
         Checkbox(checked = scored, onCheckedChange = onScoredChange)
         Text(text = scoringOpting)
     }
@@ -225,21 +226,24 @@ fun ScoringOption(scoringOpting: String, scored: Boolean, onScoredChange: (Boole
 
 @Composable
 private fun RollOff(playerFirstTurn: Boolean?, hasFirstTurnChanged: (Boolean) -> Unit) {
-    if (playerFirstTurn == null) {
-        // TODO make initial choice
-        Text("shit happened")
-    } else {
-        Row(
-            Modifier
-                .selectableGroup()
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            RadioButton(selected = playerFirstTurn, onClick = { hasFirstTurnChanged(true) })
-            Text("Me", Modifier.padding(8.dp))
-            RadioButton(selected = !playerFirstTurn, onClick = { hasFirstTurnChanged(false) })
-            Text("You", Modifier.padding(8.dp))
+    Column (horizontalAlignment = Alignment.CenterHorizontally){
+        Text("Who has first turn?", style = MaterialTheme.typography.caption)
+        if (playerFirstTurn == null) {
+            // TODO make initial choice
+            Text("shit happened")
+        } else {
+            Row(
+                Modifier
+                    .selectableGroup()
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("You", Modifier.padding(8.dp))
+                RadioButton(selected = playerFirstTurn, onClick = { hasFirstTurnChanged(true) })
+                RadioButton(selected = !playerFirstTurn, onClick = { hasFirstTurnChanged(false) })
+                Text("Opponent", Modifier.padding(8.dp))
+            }
         }
     }
 }
@@ -250,36 +254,44 @@ private fun BattleTacticChooser(
     selectedTactic: String,
     onTacticChosen: (String) -> Unit
 ) {
-    var checked by remember { mutableStateOf(false) }
-    TextField(
-        value = selectedTactic,
-        onValueChange = {},
-        readOnly = true,
-        trailingIcon = {
-            IconToggleButton(
-                checked = checked,
-                onCheckedChange = { checked = !checked }
-            ) {
-                Icon(Icons.Default.ArrowDropDown, contentDescription = "")
-            }
-        },
-        label =
-        when {
-            checked -> {
-                {
-                    BattleTacticDropdown(
-                        availableTactics = availableTactics,
-                        expanded = checked,
-                        onDismiss = { chosenTactic ->
-                            chosenTactic?.apply { onTacticChosen(chosenTactic) }
-                            checked = false
-                        }
-                    )
+    Column {
+        Text(
+            "Battle Tactic",
+            Modifier.padding(top = 8.dp),
+            style = MaterialTheme.typography.subtitle2
+        )
+        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
+        var checked by remember { mutableStateOf(false) }
+        TextField(
+            value = selectedTactic,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = {
+                IconToggleButton(
+                    checked = checked,
+                    onCheckedChange = { checked = !checked }
+                ) {
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = "")
                 }
+            },
+            label =
+            when {
+                checked -> {
+                    {
+                        BattleTacticDropdown(
+                            availableTactics = availableTactics,
+                            expanded = checked,
+                            onDismiss = { chosenTactic ->
+                                chosenTactic?.apply { onTacticChosen(chosenTactic) }
+                                checked = false
+                            }
+                        )
+                    }
+                }
+                else -> null
             }
-            else -> null
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -307,7 +319,9 @@ fun BattleTacticDropdown(
 
 @Composable
 private fun CommandPointControl(turnData : PlayerTurn, onTurnDataChange: (PlayerTurn) -> Unit) {
-    Column (horizontalAlignment = Alignment.CenterHorizontally){
+    Column (Modifier.padding(top=8.dp)){
+        Text("Command Points", style= MaterialTheme.typography.subtitle2)
+        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         Counter(
             label = "Gained",
             number = turnData.commandPointsGained,
@@ -345,7 +359,7 @@ fun PreviewPointScoring() {
         Score("Hold 2+", false), Score("Hold more", false)
     )
     AosTrackerTheme {
-        PointScoring(playerName = "Player", scoringOptions, {})
+        PointScoring(scoringOptions, {})
     }
 }
 
@@ -404,5 +418,13 @@ private fun CommandPointsPreview() {
     val playerTurn = PlayerTurn(scoringOptions, null)
     AosTrackerTheme {
         CommandPointControl(playerTurn, {})
+    }
+}
+
+@Preview
+@Composable
+fun RollOfPreview() {
+    AosTrackerTheme {
+        RollOff(playerFirstTurn = true, hasFirstTurnChanged = {})
     }
 }
