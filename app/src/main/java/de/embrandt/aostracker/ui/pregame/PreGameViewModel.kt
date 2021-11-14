@@ -69,6 +69,28 @@ class PreGameViewModel : ViewModel() {
         }
         return@derivedStateOf available
     }
+    val playerTotalScore: Int by derivedStateOf {
+        var totalScore = 0
+        for (turnStat in turnStats) {
+            for (score in turnStat.playerData.scores) {
+                if (score.scored) {
+                    totalScore++
+                }
+            }
+        }
+        totalScore
+    }
+    val opponentTotalScore: Int by derivedStateOf {
+        var totalScore = 0
+        for (turnStat in turnStats) {
+            for (score in turnStat.opponentData.scores) {
+                if (score.scored) {
+                    totalScore++
+                }
+            }
+        }
+        totalScore
+    }
 
     fun onTurnDataChanged(turnData: TurnData) {
         require(currentTurn?.turnNumber == turnData.turnNumber) {

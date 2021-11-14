@@ -2,6 +2,7 @@ package de.embrandt.aostracker.ui.home
 
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.*
@@ -216,7 +217,7 @@ private fun PointScoring(
 
 @Composable
 fun ScoringOption(scoringOpting: String, scored: Boolean, onScoredChange: (Boolean) -> Unit) {
-    Row {
+    Row (Modifier.fillMaxWidth(1f).clickable { onScoredChange(!scored) }){
         Checkbox(checked = scored, onCheckedChange = onScoredChange)
         Text(text = scoringOpting)
     }
