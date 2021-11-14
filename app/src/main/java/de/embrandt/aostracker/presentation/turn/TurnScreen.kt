@@ -107,16 +107,16 @@ private fun TurnScreen(
             if (turnInfo.playerHasFirstTurn == true) {
                 Row {
                     ParticipantTurnColumn(
-                        myName = myName,
-                        availablePlayerTactics = availablePlayerTactics,
+                        participantName = myName,
+                        availableTactics = availablePlayerTactics,
                         turnInfo = turnInfo.playerData,
                         onTurnDataChange = {onTurnDataChange(turnInfo.copy(playerData = it))},
                         onPlayerScoreChange = onPlayerScoreChange,
                         Modifier.weight(1f).padding(end = 8.dp)
                     )
                     ParticipantTurnColumn(
-                        myName = opponentName,
-                        availablePlayerTactics = availableOpponentTactics,
+                        participantName = opponentName,
+                        availableTactics = availableOpponentTactics,
                         turnInfo = turnInfo.opponentData,
                         onTurnDataChange = {onTurnDataChange(turnInfo.copy(opponentData = it))},
                         onPlayerScoreChange = onOpponentScoreChange,
@@ -128,8 +128,8 @@ private fun TurnScreen(
             } else {
                 Row {
                     ParticipantTurnColumn(
-                        myName = opponentName,
-                        availablePlayerTactics = availableOpponentTactics,
+                        participantName = opponentName,
+                        availableTactics = availableOpponentTactics,
                         turnInfo = turnInfo.opponentData,
                         onTurnDataChange = {onTurnDataChange(turnInfo.copy(opponentData = it))},
                         onPlayerScoreChange = onOpponentScoreChange,
@@ -138,8 +138,8 @@ private fun TurnScreen(
                             .padding(end = 8.dp)
                     )
                     ParticipantTurnColumn(
-                        myName = myName,
-                        availablePlayerTactics = availablePlayerTactics,
+                        participantName = myName,
+                        availableTactics = availablePlayerTactics,
                         turnInfo = turnInfo.playerData,
                         onTurnDataChange = {onTurnDataChange(turnInfo.copy(playerData = it))},
                         onPlayerScoreChange = onPlayerScoreChange,
@@ -153,20 +153,20 @@ private fun TurnScreen(
 
 @Composable
 fun ParticipantTurnColumn(
-    myName: String,
-    availablePlayerTactics: List<String>,
+    participantName: String,
+    availableTactics: List<String>,
     turnInfo: PlayerTurn,
     onTurnDataChange: (PlayerTurn) -> Unit,
     onPlayerScoreChange: (List<Score>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        Text(text = myName)
+        Text(text = participantName)
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
-        CommandPointControl()
+        CommandPointControl(turnInfo, onTurnDataChange)
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         BattleTacticChooser(
-            availableTactics = availablePlayerTactics,
+            availableTactics = availableTactics,
             selectedTactic = turnInfo.battleTactic?:"Battle Tactic",
             onTacticChosen = {
                 onTurnDataChange(
@@ -178,7 +178,7 @@ fun ParticipantTurnColumn(
         )
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         PointScoring(
-            myName,
+            participantName,
             turnInfo.scores,
             { onPlayerScoreChange(it) }
         )
@@ -306,13 +306,33 @@ fun BattleTacticDropdown(
 }
 
 @Composable
-private fun CommandPointControl() {
-    Column {
-        Row {
-            //TODO spent
-            Text("Spent - 0 +")
-            // TODO GAINED
-            Text("Gained - 0 +")
+private fun CommandPointControl(turnData : PlayerTurn, onTurnDataChange: (PlayerTurn) -> Unit) {
+    Column (horizontalAlignment = Alignment.CenterHorizontally){
+        Counter(
+            label = "Gained",
+            number = turnData.commandPointsGained,
+            onNumberChange = {onTurnDataChange(turnData.copy(commandPointsGained = it))})
+        Counter(
+            label = "Spent",
+            number = turnData.commandPointsSpent,
+            onNumberChange = {onTurnDataChange(turnData.copy(commandPointsSpent = it))})
+    }
+}
+
+@Composable
+fun Counter(label : String, number : Int, onNumberChange : (Int) -> Unit) {
+    Text(label, style = MaterialTheme.typography.overline)
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        TextButton(onClick = { onNumberChange(number-1) }) {
+            Text("-")
+        }
+        Text(number.toString())
+        TextButton(onClick = { onNumberChange(number+1) }) {
+            Text("+")
         }
     }
 }
@@ -377,7 +397,12 @@ private fun TurnScreenPreview() {
 @Composable
 @Preview
 private fun CommandPointsPreview() {
+    val scoringOptions = listOf(
+        Score("Battle Tactic scored", false), Score("Hold 1", false),
+        Score("Hold 2+", false), Score("Hold more", false)
+    )
+    val playerTurn = PlayerTurn(scoringOptions, null)
     AosTrackerTheme {
-        CommandPointControl()
+        CommandPointControl(playerTurn, {})
     }
 }
