@@ -1,4 +1,4 @@
-package de.embrandt.aostracker.ui.home
+package de.embrandt.aostracker.presentation.turn
 
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -20,15 +20,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import de.embrandt.aostracker.PlayerTurn
-import de.embrandt.aostracker.Score
-import de.embrandt.aostracker.TurnData
-import de.embrandt.aostracker.ui.pregame.PreGameViewModel
+import de.embrandt.aostracker.domain.model.PlayerTurn
+import de.embrandt.aostracker.domain.model.Score
+import de.embrandt.aostracker.domain.model.TurnData
+import de.embrandt.aostracker.presentation.GameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
 @Composable
 fun TurnScreenStart() {
-    val turnViewModel: PreGameViewModel = viewModel(LocalContext.current as AppCompatActivity)
+    val turnViewModel: GameViewModel = viewModel(LocalContext.current as AppCompatActivity)
     TurnScreen(
         turnViewModel.gameData.playerName,
         turnViewModel.gameData.opponentName,

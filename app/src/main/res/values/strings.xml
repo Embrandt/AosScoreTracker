@@ -2,5 +2,4 @@
     <string name="app_name">AosTracker</string>
     <string name="title_pregame">Pre Game</string>
     <string name="title_turn_display">Turns</string>
-    <string name="title_notifications">Notifications</string>
 </resources>

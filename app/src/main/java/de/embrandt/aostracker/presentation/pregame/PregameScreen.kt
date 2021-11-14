@@ -1,4 +1,4 @@
-package de.embrandt.aostracker.ui.notifications
+package de.embrandt.aostracker.presentation.pregame
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -21,8 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.material.datepicker.MaterialDatePicker
-import de.embrandt.aostracker.GameData
-import de.embrandt.aostracker.ui.pregame.PreGameViewModel
+import de.embrandt.aostracker.domain.model.GameData
+import de.embrandt.aostracker.presentation.GameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 import java.time.Instant
 import java.time.LocalDate
@@ -81,12 +81,12 @@ private fun PregameTextField(value: String, onValueChange: (String) -> Unit, lab
 
 @Composable
 fun PregameScreen() {
-    val viewModel: PreGameViewModel = viewModel(LocalContext.current as AppCompatActivity)
-    PregameContent(gamedata = viewModel.gameData, gameDataChange = viewModel::onGameDataChanged)
+    val viewModel: GameViewModel = viewModel(LocalContext.current as AppCompatActivity)
+    PregameContent(gameData = viewModel.gameData, gameDataChange = viewModel::onGameDataChanged)
 }
 
 @Composable
-fun PregameContent(gamedata: GameData, gameDataChange: (GameData) -> Unit) {
+fun PregameContent(gameData: GameData, gameDataChange: (GameData) -> Unit) {
     val activity = LocalContext.current as AppCompatActivity
     Column(
         Modifier
@@ -95,7 +95,7 @@ fun PregameContent(gamedata: GameData, gameDataChange: (GameData) -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        TextField(value = gamedata.battleDateText,
+        TextField(value = gameData.battleDateText,
             onValueChange = {},
             Modifier
                 .fillMaxWidth()
@@ -106,40 +106,40 @@ fun PregameContent(gamedata: GameData, gameDataChange: (GameData) -> Unit) {
                     onClick = {
                         selectDate(
                             context = activity,
-                            updateDate = { gameDataChange(gamedata.copy(battleDate = it)) }
+                            updateDate = { gameDataChange(gameData.copy(battleDate = it)) }
                         )
                     }) {
                     Icon(Icons.Filled.DateRange, contentDescription = "")
                 }
             })
         PregameTextField(
-            value = gamedata.playerName,
-            onValueChange = { gameDataChange(gamedata.copy(playerName = it)) },
+            value = gameData.playerName,
+            onValueChange = { gameDataChange(gameData.copy(playerName = it)) },
             label = "Your Name"
         )
         PregameTextField(
-            value = gamedata.playerFaction,
-            onValueChange = { gameDataChange(gamedata.copy(playerFaction = it)) },
+            value = gameData.playerFaction,
+            onValueChange = { gameDataChange(gameData.copy(playerFaction = it)) },
             label = "Your Faction"
         )
         PregameTextField(
-            value = gamedata.playerGrandStrategy,
-            onValueChange = { gameDataChange(gamedata.copy(playerGrandStrategy = it)) },
+            value = gameData.playerGrandStrategy,
+            onValueChange = { gameDataChange(gameData.copy(playerGrandStrategy = it)) },
             label = "Your Grand Strategy"
         )
         PregameTextField(
-            value = gamedata.opponentName,
-            onValueChange = { gameDataChange(gamedata.copy(opponentName = it)) },
+            value = gameData.opponentName,
+            onValueChange = { gameDataChange(gameData.copy(opponentName = it)) },
             label = "Opponents' Name"
         )
         PregameTextField(
-            value = gamedata.opponentFaction,
-            onValueChange = { gameDataChange(gamedata.copy(opponentFaction = it)) },
+            value = gameData.opponentFaction,
+            onValueChange = { gameDataChange(gameData.copy(opponentFaction = it)) },
             label = "Opponents' Faction"
         )
         PregameTextField(
-            value = gamedata.opponentGrandStrategy,
-            onValueChange = { gameDataChange(gamedata.copy(opponentGrandStrategy = it)) },
+            value = gameData.opponentGrandStrategy,
+            onValueChange = { gameDataChange(gameData.copy(opponentGrandStrategy = it)) },
             label = "Opponents' Grand Strategy"
         )
     }

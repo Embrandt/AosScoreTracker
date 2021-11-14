@@ -10,8 +10,3 @@ val YellowC300 = Color(0xffffd95a) // secondary light
 val YellowDark = Color(0xffc17900)// secondary dark
 val textColor = Color(0xffffffff) // primary text
 val textColorSecondary = Color(0xff000000) // secondary text
-
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)

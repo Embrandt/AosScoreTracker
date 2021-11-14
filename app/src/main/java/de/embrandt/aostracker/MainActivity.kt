@@ -23,9 +23,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import de.embrandt.aostracker.ui.home.TurnScreenStart
-import de.embrandt.aostracker.ui.notifications.PregameScreen
-import de.embrandt.aostracker.ui.pregame.PreGameViewModel
+import de.embrandt.aostracker.presentation.turn.TurnScreenStart
+import de.embrandt.aostracker.presentation.pregame.PregameScreen
+import de.embrandt.aostracker.presentation.GameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
-    val viewModel: PreGameViewModel = viewModel(LocalContext.current as AppCompatActivity)
+    val viewModel: GameViewModel = viewModel(LocalContext.current as AppCompatActivity)
     val titleText = "${viewModel.playerTotalScore} - ${viewModel.opponentTotalScore} ${viewModel.gameData.playerName} vs. ${viewModel.gameData.opponentName}"
 
     Scaffold(

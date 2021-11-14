@@ -1,4 +1,4 @@
-package de.embrandt.aostracker
+package de.embrandt.aostracker.domain.model
 
 data class TurnData(
     val turnNumber: Int,

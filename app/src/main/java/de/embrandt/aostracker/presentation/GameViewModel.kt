@@ -1,17 +1,16 @@
-package de.embrandt.aostracker.ui.pregame
+package de.embrandt.aostracker.presentation
 
 import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
-import de.embrandt.aostracker.GameData
-import de.embrandt.aostracker.PlayerTurn
-import de.embrandt.aostracker.Score
-import de.embrandt.aostracker.TurnData
+import de.embrandt.aostracker.domain.model.GameData
+import de.embrandt.aostracker.domain.model.PlayerTurn
+import de.embrandt.aostracker.domain.model.Score
+import de.embrandt.aostracker.domain.model.TurnData
 import java.time.LocalDate
 
-class PreGameViewModel : ViewModel() {
-    var turnStats = mutableStateListOf<TurnData>()
-        private set
+class GameViewModel : ViewModel() {
+    private var turnStats = mutableStateListOf<TurnData>()
 
     // TODO initialize from mission
     private val scoringOptionsPlayer = listOf(
@@ -44,7 +43,7 @@ class PreGameViewModel : ViewModel() {
         initializeTurns()
     }
 
-    var gameData by mutableStateOf<GameData>(GameData(LocalDate.now()))
+    var gameData by mutableStateOf(GameData(LocalDate.now()))
     fun onGameDataChanged(newData: GameData) {
         gameData = newData
     }

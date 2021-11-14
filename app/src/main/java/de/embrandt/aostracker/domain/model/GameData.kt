@@ -1,4 +1,4 @@
-package de.embrandt.aostracker
+package de.embrandt.aostracker.domain.model
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
