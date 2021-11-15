@@ -4,13 +4,14 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 data class GameData(
-    var battleDate: LocalDate?,
-    var playerName: String = "",
-    var opponentName: String = "",
-    var playerFaction: Faction? = null,
-    var playerGrandStrategy: String = "",
-    var opponentFaction: Faction? = null,
-    var opponentGrandStrategy: String = ""
+    val battleDate: LocalDate?,
+    val battlePlan: BattlePlan? = null,
+    val playerName: String = "",
+    val opponentName: String = "",
+    val playerFaction: Faction? = null,
+    val playerGrandStrategy: String = "",
+    val opponentFaction: Faction? = null,
+    val opponentGrandStrategy: String = ""
 ) {
     private val newFormat = DateTimeFormatter.ISO_LOCAL_DATE
     val battleDateText : String

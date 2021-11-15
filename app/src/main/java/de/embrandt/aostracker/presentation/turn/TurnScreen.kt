@@ -20,9 +20,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import de.embrandt.aostracker.domain.model.BattlePlan
 import de.embrandt.aostracker.domain.model.PlayerTurn
-import de.embrandt.aostracker.domain.model.Score
+import de.embrandt.aostracker.domain.model.ScoringOption
 import de.embrandt.aostracker.domain.model.TurnData
+import de.embrandt.aostracker.domain.util.BPScoring
 import de.embrandt.aostracker.presentation.GameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
@@ -38,7 +40,8 @@ fun TurnScreenStart() {
         turnViewModel::onPlayerScoreChange,
         turnViewModel::onOpponentScoreChange,
         turnViewModel.availablePlayerTactics,
-        turnViewModel.availableOpponentTactics
+        turnViewModel.availableOpponentTactics,
+        turnViewModel.gameData.battlePlan
     )
 }
 
@@ -86,10 +89,11 @@ private fun TurnScreen(
     turnInfo: TurnData,
     onTurnDataChange: (TurnData) -> Unit,
     onTurnChange: (Int) -> Unit,
-    onPlayerScoreChange: (List<Score>) -> Unit,
-    onOpponentScoreChange: (List<Score>) -> Unit,
+    onPlayerScoreChange: (Set<ScoringOption>) -> Unit,
+    onOpponentScoreChange: (Set<ScoringOption>) -> Unit,
     availablePlayerTactics: List<String>,
-    availableOpponentTactics: List<String>
+    availableOpponentTactics: List<String>,
+    battlePlan: BattlePlan? = null
 ) {
     Column {
         TurnTopBar(
@@ -107,29 +111,31 @@ private fun TurnScreen(
             if (turnInfo.playerHasFirstTurn == true) {
                 Row {
                     ParticipantTurnColumn(
+                        battlePlan = battlePlan,
                         participantName = myName,
                         availableTactics = availablePlayerTactics,
                         turnInfo = turnInfo.playerData,
                         onTurnDataChange = {onTurnDataChange(turnInfo.copy(playerData = it))},
                         onPlayerScoreChange = onPlayerScoreChange,
-                        Modifier
+                        modifier = Modifier
                             .weight(1f)
                             .padding(end = 8.dp)
                     )
                     ParticipantTurnColumn(
+                        battlePlan = battlePlan,
                         participantName = opponentName,
                         availableTactics = availableOpponentTactics,
                         turnInfo = turnInfo.opponentData,
                         onTurnDataChange = {onTurnDataChange(turnInfo.copy(opponentData = it))},
                         onPlayerScoreChange = onOpponentScoreChange,
-                        Modifier
-                            .weight(1f)
+                        modifier = Modifier.weight(1f)
 
                     )
                 }
             } else {
                 Row {
                     ParticipantTurnColumn(
+                        battlePlan = battlePlan,
                         participantName = opponentName,
                         availableTactics = availableOpponentTactics,
                         turnInfo = turnInfo.opponentData,
@@ -140,6 +146,7 @@ private fun TurnScreen(
                             .padding(end = 8.dp)
                     )
                     ParticipantTurnColumn(
+                        battlePlan = battlePlan,
                         participantName = myName,
                         availableTactics = availablePlayerTactics,
                         turnInfo = turnInfo.playerData,
@@ -155,11 +162,12 @@ private fun TurnScreen(
 
 @Composable
 fun ParticipantTurnColumn(
+    battlePlan: BattlePlan?,
     participantName: String,
     availableTactics: List<String>,
     turnInfo: PlayerTurn,
     onTurnDataChange: (PlayerTurn) -> Unit,
-    onPlayerScoreChange: (List<Score>) -> Unit,
+    onPlayerScoreChange: (Set<ScoringOption>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -177,34 +185,36 @@ fun ParticipantTurnColumn(
                 )
             }
         )
-        PointScoring(
-            turnInfo.scores,
-            { onPlayerScoreChange(it) }
-        )
+        if (battlePlan != null) {
+            PointScoring(
+                scoringOptions = battlePlan.scoringOptions,
+                scoredByParticipant = turnInfo.scores,
+                onScoreChange = { onPlayerScoreChange(it) })
+        }
     }
 }
 
 @Composable
 private fun PointScoring(
-    scores: List<Score>,
-    onScoreChange: (List<Score>) -> Unit,
+    scoringOptions: Set<ScoringOption>,
+    scoredByParticipant : Set<ScoringOption>,
+    onScoreChange: (Set<ScoringOption>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.padding(top=16.dp)) {
         Text(text = "Objectives scored", style= MaterialTheme.typography.subtitle2)
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
-        scores.map { score ->
-            ScoringOption(
-                scoringOpting = score.scoringOption,
-                scored = score.scored,
-                onScoredChange = {
-                    val newScores = mutableListOf<Score>()
-                    for (oldScore in scores) {
-                        if (oldScore.scoringOption == score.scoringOption) {
-                            newScores.add(oldScore.copy(scored = it))
-                        } else {
-                            newScores.add(oldScore)
-                        }
+        scoringOptions.map { score ->
+            val isScored = score in scoredByParticipant
+            ScoringCheckBox(
+                scoringOpting = score.shortDescripton,
+                scored = isScored,
+                onScoredChange = { scoreChanged ->
+                    val newScores = scoredByParticipant.toMutableSet()
+                    if (scoreChanged) {
+                        newScores.add(score)
+                    } else {
+                        newScores.remove(score)
                     }
                     onScoreChange(newScores)
                 }
@@ -214,7 +224,7 @@ private fun PointScoring(
 }
 
 @Composable
-fun ScoringOption(scoringOpting: String, scored: Boolean, onScoredChange: (Boolean) -> Unit) {
+fun ScoringCheckBox(scoringOpting: String, scored: Boolean, onScoredChange: (Boolean) -> Unit) {
     Row (
         Modifier
             .fillMaxWidth(1f)
@@ -354,12 +364,8 @@ fun Counter(label : String, number : Int, onNumberChange : (Int) -> Unit) {
 @Preview
 @Composable
 fun PreviewPointScoring() {
-    val scoringOptions = listOf(
-        Score("Battle Tactic scored", false), Score("Hold 1", false),
-        Score("Hold 2+", false), Score("Hold more", false)
-    )
     AosTrackerTheme {
-        PointScoring(scoringOptions, {})
+        PointScoring(BPScoring.DefaultScoring.scoringOptions, emptySet(), {})
     }
 }
 
@@ -396,11 +402,7 @@ fun PreviewBattleTacticChooser() {
 @Composable
 @Preview
 private fun TurnScreenPreview() {
-    val scoringOptions = listOf(
-        Score("Battle Tactic scored", false), Score("Hold 1", false),
-        Score("Hold 2+", false), Score("Hold more", false)
-    )
-    val playerTurn = PlayerTurn(scoringOptions, null)
+    val playerTurn = PlayerTurn()
     val turnData = TurnData(1, playerTurn, playerTurn)
     AosTrackerTheme {
         TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf("Available"), listOf("Other")
@@ -411,11 +413,7 @@ private fun TurnScreenPreview() {
 @Composable
 @Preview
 private fun CommandPointsPreview() {
-    val scoringOptions = listOf(
-        Score("Battle Tactic scored", false), Score("Hold 1", false),
-        Score("Hold 2+", false), Score("Hold more", false)
-    )
-    val playerTurn = PlayerTurn(scoringOptions, null)
+    val playerTurn = PlayerTurn()
     AosTrackerTheme {
         CommandPointControl(playerTurn, {})
     }

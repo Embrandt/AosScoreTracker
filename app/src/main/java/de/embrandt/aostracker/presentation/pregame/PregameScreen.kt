@@ -1,5 +1,6 @@
 package de.embrandt.aostracker.presentation.pregame
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -7,6 +8,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
@@ -19,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.material.datepicker.MaterialDatePicker
+import de.embrandt.aostracker.domain.model.BattlePlan
 import de.embrandt.aostracker.domain.model.Faction
 import de.embrandt.aostracker.domain.model.GameData
 import de.embrandt.aostracker.domain.util.Configuration
@@ -29,7 +32,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
 
-private fun selectDate(context: AppCompatActivity, updateDate: (LocalDate) -> Unit) {
+private fun selectDate(context: Context, updateDate: (LocalDate) -> Unit) {
+    context as AppCompatActivity
     val picker = MaterialDatePicker.Builder.datePicker().build()
     picker.show(context.supportFragmentManager, picker.toString())
     picker.addOnPositiveButtonClickListener {
@@ -61,12 +65,20 @@ private fun PregameTextField(value: String, onValueChange: (String) -> Unit, lab
 @Composable
 fun PregameScreen() {
     val viewModel: GameViewModel = viewModel(LocalContext.current as AppCompatActivity)
-    PregameContent(gameData = viewModel.gameData, gameDataChange = viewModel::onGameDataChanged)
+    PregameContent(
+        gameData = viewModel.gameData,
+        onGameDataChange = viewModel::onGameDataChanged,
+        onBattlePlanChange = viewModel::onBattlePlanChanged
+    )
 }
 
 @Composable
-fun PregameContent(gameData: GameData, gameDataChange: (GameData) -> Unit) {
-    val activity = LocalContext.current as AppCompatActivity
+fun PregameContent(
+    gameData: GameData,
+    onGameDataChange: (GameData) -> Unit,
+    onBattlePlanChange: (BattlePlan) -> Unit
+) {
+    val activity = LocalContext.current
 
 
     Column(
@@ -87,44 +99,75 @@ fun PregameContent(gameData: GameData, gameDataChange: (GameData) -> Unit) {
                     onClick = {
                         selectDate(
                             context = activity,
-                            updateDate = { gameDataChange(gameData.copy(battleDate = it)) }
+                            updateDate = { onGameDataChange(gameData.copy(battleDate = it)) }
                         )
                     }) {
                     Icon(Icons.Filled.DateRange, contentDescription = "")
                 }
             })
+        Box {
+            var dropdownOpen by remember { mutableStateOf(false) }
+            TextField(
+                value = gameData.battlePlan?.name ?: "",
+                onValueChange = { },
+                readOnly = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                label = { Text("BattlePlan") },
+                trailingIcon = {
+                    IconButton(
+                        onClick = { dropdownOpen = true }
+                    ) {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "")
+                    }
+                })
+            DropdownMenu(
+                expanded = dropdownOpen,
+                onDismissRequest = { dropdownOpen = false }) {
+                Configuration.battlePlans.map {
+                    DropdownMenuItem(
+                        onClick = {
+                            onBattlePlanChange(it)
+                            dropdownOpen = false
+                        }) {
+                        Text(it.name)
+                    }
+                }
+            }
+        }
         PregameTextField(
             value = gameData.playerName,
-            onValueChange = { gameDataChange(gameData.copy(playerName = it)) },
+            onValueChange = { onGameDataChange(gameData.copy(playerName = it)) },
             label = "Your Name"
         )
 
         FactionFieldWithChoiceDialog(
             defaultLabel = "Your Faction",
             selectedFaction = gameData.playerFaction,
-            onFactionSelected = { gameDataChange(gameData.copy(playerFaction = it)) }
+            onFactionSelected = { onGameDataChange(gameData.copy(playerFaction = it)) }
         )
 
         PregameTextField(
             value = gameData.playerGrandStrategy,
-            onValueChange = { gameDataChange(gameData.copy(playerGrandStrategy = it)) },
+            onValueChange = { onGameDataChange(gameData.copy(playerGrandStrategy = it)) },
             label = "Your Grand Strategy"
         )
         PregameTextField(
             value = gameData.opponentName,
-            onValueChange = { gameDataChange(gameData.copy(opponentName = it)) },
+            onValueChange = { onGameDataChange(gameData.copy(opponentName = it)) },
             label = "Opponents' Name"
         )
 
         FactionFieldWithChoiceDialog(
             defaultLabel = "Opponents' Faction",
             selectedFaction = gameData.opponentFaction,
-            onFactionSelected = { gameDataChange(gameData.copy(opponentFaction = it)) }
+            onFactionSelected = { onGameDataChange(gameData.copy(opponentFaction = it)) }
         )
 
         PregameTextField(
             value = gameData.opponentGrandStrategy,
-            onValueChange = { gameDataChange(gameData.copy(opponentGrandStrategy = it)) },
+            onValueChange = { onGameDataChange(gameData.copy(opponentGrandStrategy = it)) },
             label = "Opponents' Grand Strategy"
         )
     }
@@ -209,6 +252,6 @@ fun FactionRadioButton(faction: Faction, selected: Boolean, onFactionSelected: (
 private fun PreViewScreen() {
     val gameData = GameData(null, playerName = "Marcel")
     AosTrackerTheme {
-        PregameContent(gameData, gameDataChange = {})
+        PregameContent(gameData, onGameDataChange = {}, {})
     }
 }

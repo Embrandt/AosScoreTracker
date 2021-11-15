@@ -3,20 +3,17 @@ package de.embrandt.aostracker.presentation
 import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
-import de.embrandt.aostracker.domain.model.GameData
-import de.embrandt.aostracker.domain.model.PlayerTurn
-import de.embrandt.aostracker.domain.model.Score
-import de.embrandt.aostracker.domain.model.TurnData
+import de.embrandt.aostracker.domain.model.*
 import java.time.LocalDate
 
 class GameViewModel : ViewModel() {
     private var turnStats = mutableStateListOf<TurnData>()
 
     // TODO initialize from mission
-    private val scoringOptionsPlayer = listOf(
-        Score("Battle Tactic scored", false), Score("Hold 1", false),
-        Score("Hold 2+", false), Score("Hold more", false)
-    )
+//    private val scoringOptionsPlayer = listOf(
+//        Score("Battle Tactic scored", false), Score("Hold 1", false),
+//        Score("Hold 2+", false), Score("Hold more", false)
+//    )
     private val tactics = listOf(
         "Ihre Reihen Zerschmettern",
         "Erobern",
@@ -31,8 +28,8 @@ class GameViewModel : ViewModel() {
     private fun initializeTurns() {
         for (i in 1..5) {
 
-            val playerTurn = PlayerTurn(scores = scoringOptionsPlayer, null)
-            val opponentTurn = PlayerTurn(scores = scoringOptionsPlayer, null)
+            val playerTurn = PlayerTurn()
+            val opponentTurn = PlayerTurn()
             val turnData = TurnData(i, playerTurn, opponentTurn)
             turnStats.add(turnData)
         }
@@ -46,6 +43,16 @@ class GameViewModel : ViewModel() {
     var gameData by mutableStateOf(GameData(LocalDate.now()))
     fun onGameDataChanged(newData: GameData) {
         gameData = newData
+    }
+
+    fun onBattlePlanChanged(battlePlan: BattlePlan) {
+        val newStats = mutableListOf<TurnData>()
+        for (turnData in turnStats) {
+            newStats.add(turnData.copy(playerData = turnData.playerData.copy(scores = emptySet())))
+        }
+        turnStats.clear()
+        turnStats.addAll(newStats)
+        onGameDataChanged(gameData.copy(battlePlan = battlePlan))
     }
 
     private var currentTurnNumber by mutableStateOf(0)
@@ -72,9 +79,7 @@ class GameViewModel : ViewModel() {
         var totalScore = 0
         for (turnStat in turnStats) {
             for (score in turnStat.playerData.scores) {
-                if (score.scored) {
-                    totalScore++
-                }
+                totalScore += score.pointValue
             }
         }
         totalScore
@@ -83,9 +88,7 @@ class GameViewModel : ViewModel() {
         var totalScore = 0
         for (turnStat in turnStats) {
             for (score in turnStat.opponentData.scores) {
-                if (score.scored) {
-                    totalScore++
-                }
+                totalScore += score.pointValue
             }
         }
         totalScore
@@ -102,14 +105,14 @@ class GameViewModel : ViewModel() {
         currentTurnNumber = turnNumber - 1
     }
 
-    fun onPlayerScoreChange(newScores: List<Score>) {
+    fun onPlayerScoreChange(newScores: Set<ScoringOption>) {
         currentTurn?.let {
             val changedTurnData = it.copy(playerData = it.playerData.copy(scores = newScores))
             onTurnDataChanged(changedTurnData)
         }
     }
 
-    fun onOpponentScoreChange(newScores: List<Score>) {
+    fun onOpponentScoreChange(newScores: Set<ScoringOption>) {
         currentTurn?.let {
             val changedTurnData = it.copy(opponentData = it.opponentData.copy(scores = newScores))
             onTurnDataChanged(changedTurnData)
