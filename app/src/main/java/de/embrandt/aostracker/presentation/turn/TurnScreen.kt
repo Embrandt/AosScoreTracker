@@ -116,52 +116,54 @@ private fun TurnScreen(
                 playerFirstTurn = turnInfo.playerHasFirstTurn,
                 hasFirstTurnChanged = { onTurnDataChange(turnInfo.copy(playerHasFirstTurn = it)) }
             )
-            if (turnInfo.playerHasFirstTurn == true) {
-                Row {
-                    ParticipantTurnColumn(
-                        battlePlan = battlePlan,
-                        participantName = myName,
-                        availableTactics = availablePlayerTactics,
-                        turnInfo = turnInfo.playerData,
-                        onTurnDataChange = { onTurnDataChange(turnInfo.copy(playerData = it)) },
-                        onPlayerScoreChange = onPlayerScoreChange,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 8.dp)
-                    )
-                    ParticipantTurnColumn(
-                        battlePlan = battlePlan,
-                        participantName = opponentName,
-                        availableTactics = availableOpponentTactics,
-                        turnInfo = turnInfo.opponentData,
-                        onTurnDataChange = { onTurnDataChange(turnInfo.copy(opponentData = it)) },
-                        onPlayerScoreChange = onOpponentScoreChange,
-                        modifier = Modifier.weight(1f)
+            if (turnInfo.playerHasFirstTurn != null) {
+                if (turnInfo.playerHasFirstTurn == true) {
+                    Row {
+                        ParticipantTurnColumn(
+                            battlePlan = battlePlan,
+                            participantName = myName,
+                            availableTactics = availablePlayerTactics,
+                            turnInfo = turnInfo.playerData,
+                            onTurnDataChange = { onTurnDataChange(turnInfo.copy(playerData = it)) },
+                            onPlayerScoreChange = onPlayerScoreChange,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp)
+                        )
+                        ParticipantTurnColumn(
+                            battlePlan = battlePlan,
+                            participantName = opponentName,
+                            availableTactics = availableOpponentTactics,
+                            turnInfo = turnInfo.opponentData,
+                            onTurnDataChange = { onTurnDataChange(turnInfo.copy(opponentData = it)) },
+                            onPlayerScoreChange = onOpponentScoreChange,
+                            modifier = Modifier.weight(1f)
 
-                    )
-                }
-            } else {
-                Row {
-                    ParticipantTurnColumn(
-                        battlePlan = battlePlan,
-                        participantName = opponentName,
-                        availableTactics = availableOpponentTactics,
-                        turnInfo = turnInfo.opponentData,
-                        onTurnDataChange = { onTurnDataChange(turnInfo.copy(opponentData = it)) },
-                        onPlayerScoreChange = onOpponentScoreChange,
-                        Modifier
-                            .weight(1f)
-                            .padding(end = 8.dp)
-                    )
-                    ParticipantTurnColumn(
-                        battlePlan = battlePlan,
-                        participantName = myName,
-                        availableTactics = availablePlayerTactics,
-                        turnInfo = turnInfo.playerData,
-                        onTurnDataChange = { onTurnDataChange(turnInfo.copy(playerData = it)) },
-                        onPlayerScoreChange = onPlayerScoreChange,
-                        Modifier.weight(1f)
-                    )
+                        )
+                    }
+                } else {
+                    Row {
+                        ParticipantTurnColumn(
+                            battlePlan = battlePlan,
+                            participantName = opponentName,
+                            availableTactics = availableOpponentTactics,
+                            turnInfo = turnInfo.opponentData,
+                            onTurnDataChange = { onTurnDataChange(turnInfo.copy(opponentData = it)) },
+                            onPlayerScoreChange = onOpponentScoreChange,
+                            Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp)
+                        )
+                        ParticipantTurnColumn(
+                            battlePlan = battlePlan,
+                            participantName = myName,
+                            availableTactics = availablePlayerTactics,
+                            turnInfo = turnInfo.playerData,
+                            onTurnDataChange = { onTurnDataChange(turnInfo.copy(playerData = it)) },
+                            onPlayerScoreChange = onPlayerScoreChange,
+                            Modifier.weight(1f)
+                        )
+                    }
                 }
             }
         }
@@ -246,22 +248,19 @@ fun ScoringCheckBox(scoringOpting: String, scored: Boolean, onScoredChange: (Boo
 private fun RollOff(playerFirstTurn: Boolean?, hasFirstTurnChanged: (Boolean) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Who has first turn?", style = MaterialTheme.typography.caption)
-        if (playerFirstTurn == null) {
-            // TODO make initial choice
-            Text("shit happened")
-        } else {
-            Row(
-                Modifier
-                    .selectableGroup()
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("You", Modifier.padding(8.dp))
-                RadioButton(selected = playerFirstTurn, onClick = { hasFirstTurnChanged(true) })
-                RadioButton(selected = !playerFirstTurn, onClick = { hasFirstTurnChanged(false) })
-                Text("Opponent", Modifier.padding(8.dp))
-            }
+        Row(
+            Modifier
+                .selectableGroup()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("You", Modifier.padding(8.dp))
+            RadioButton(selected = playerFirstTurn == true, onClick = { hasFirstTurnChanged(true) })
+            RadioButton(
+                selected = playerFirstTurn == false,
+                onClick = { hasFirstTurnChanged(false) })
+            Text("Opponent", Modifier.padding(8.dp))
         }
     }
 }
@@ -409,9 +408,20 @@ fun PreviewBattleTacticChooser() {
 
 @Composable
 @Preview
-private fun TurnScreenPreview() {
+private fun TurnScreenRollOfPreview() {
     val playerTurn = PlayerTurn()
     val turnData = TurnData(1, playerTurn, playerTurn)
+    AosTrackerTheme {
+        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf("Available"), listOf("Other")
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun TurnScreenPreview() {
+    val playerTurn = PlayerTurn()
+    val turnData = TurnData(1, playerTurn, playerTurn, true)
     AosTrackerTheme {
         TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf("Available"), listOf("Other")
         )
