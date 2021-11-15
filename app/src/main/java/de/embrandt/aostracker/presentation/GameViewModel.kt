@@ -9,11 +9,6 @@ import java.time.LocalDate
 class GameViewModel : ViewModel() {
     private var turnStats = mutableStateListOf<TurnData>()
 
-    // TODO initialize from mission
-//    private val scoringOptionsPlayer = listOf(
-//        Score("Battle Tactic scored", false), Score("Hold 1", false),
-//        Score("Hold 2+", false), Score("Hold more", false)
-//    )
     private val tactics = listOf(
         "Ihre Reihen Zerschmettern",
         "Erobern",
