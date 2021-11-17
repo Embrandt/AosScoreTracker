@@ -77,7 +77,10 @@ fun TurnTopBar(turnNumber: Int, onTurnChange: (Int) -> Unit) {
                 }
                 DropdownMenu(expanded = dropdownOpen, onDismissRequest = { dropdownOpen = false }) {
                     for (i in 1..5) {
-                        DropdownMenuItem(onClick = { onTurnChange(i) }) {
+                        DropdownMenuItem(onClick = {
+                            onTurnChange(i)
+                            dropdownOpen = false
+                        }) {
                             Text("Turn $i")
                         }
                     }
@@ -342,11 +345,11 @@ private fun CommandPointControl(turnData: PlayerTurn, onTurnDataChange: (PlayerT
         Counter(
             label = "Gained",
             number = turnData.commandPointsGained,
-            onNumberChange = { onTurnDataChange(turnData.copy(commandPointsGained = it)) })
+            onNumberChange = { if (it >= 0) onTurnDataChange(turnData.copy(commandPointsGained = it)) })
         Counter(
             label = "Spent",
             number = turnData.commandPointsSpent,
-            onNumberChange = { onTurnDataChange(turnData.copy(commandPointsSpent = it)) })
+            onNumberChange = { if (it >= 0) onTurnDataChange(turnData.copy(commandPointsSpent = it)) })
     }
 }
 

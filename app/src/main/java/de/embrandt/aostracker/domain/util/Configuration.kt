@@ -5,40 +5,69 @@ import de.embrandt.aostracker.domain.model.Faction
 import de.embrandt.aostracker.domain.model.ScoringOption
 
 object Configuration {
-    val factions : List<Faction> = initializeFactions()
-    val battlePlans : List<BattlePlan> = initializeBattlePlans()
+    val factions: List<Faction> = initializeFactions()
+    val battlePlans: List<BattlePlan> = initializeBattlePlans()
 }
 
-private fun initializeFactions() : List<Faction> {
+private fun initializeFactions(): List<Faction> {
     return listOf(
-        Faction("Stormcast Eternals"),
-        Faction("Orruks")
+        Faction.Stormcast,
+        Faction.Orruks,
+        Faction.Beasts,
+        Faction.Khorne,
+        Faction.Cities,
+        Faction.Khaine,
+        Faction.Tzeench,
+        Faction.FleshEaters,
+        Faction.Fyreslayers,
+        Faction.Gitz,
+        Faction.Slaanesh,
+        Faction.Idoneth,
+        Faction.Kharadron,
+        Faction.Belakor,
+        Faction.Lumineth,
+        Faction.Nurgle,
+        Faction.Nighthaunt,
+        Faction.Ogor,
+        Faction.Bonereapers,
+        Faction.Seraphon,
+        Faction.Skaven,
+        Faction.Slaves,
+        Faction.Behemat,
+        Faction.Gravelords,
+        Faction.Sylvaneth
     )
 }
 
-private fun initializeBattlePlans() : List<BattlePlan> {
+private fun initializeBattlePlans(): List<BattlePlan> {
     return listOf(
-        BattlePlan("Machtkampf", setOf(
-            ScoringOption("Mindestens 1 Ziel für zwei eigene Züge gehalten", 1),
-            ScoringOption("2 oder mehr Ziele für zwei eigene Züge gehalten", 1),
-            ScoringOption("Mehr Ziele kontrolliert als der Gegner", 1),
-            ScoringOption("Taktisches Vorhaben erfüllt", 2)
-        )),
+        BattlePlan(
+            "Machtkampf", setOf(
+                ScoringOption("Mindestens 1 Ziel für zwei eigene Züge gehalten", 1),
+                ScoringOption("2 oder mehr Ziele für zwei eigene Züge gehalten", 1),
+                ScoringOption("Mehr Ziele kontrolliert als der Gegner", 1),
+                ScoringOption("Taktisches Vorhaben erfüllt", 2)
+            )
+        ),
         BattlePlan("Schraubstock", BPScoring.DefaultScoring.scoringOptions),
-        BattlePlan("Brutale Eroberung", setOf(
-            ScoringOption("Ziel an Grenze des eigenen Territoriums gehalten", 1),
-            ScoringOption("Neutrales Ziel gehalten", 2),
-            ScoringOption("Ziel an Grenze des generischen Territoriums gehalten", 4),
-            ScoringOption("Taktisches Vorhaben erfüllt", 2)
+        BattlePlan(
+            "Brutale Eroberung", setOf(
+                ScoringOption("Ziel an Grenze des eigenen Territoriums gehalten", 1),
+                ScoringOption("Neutrales Ziel gehalten", 2),
+                ScoringOption("Ziel an Grenze des generischen Territoriums gehalten", 4),
+                ScoringOption("Taktisches Vorhaben erfüllt", 2)
             )
         )
     )
 }
-sealed class BPScoring(val scoringOptions : Set<ScoringOption>) {
-    object DefaultScoring : BPScoring(setOf(
-        ScoringOption("Hold 1", 1),
-        ScoringOption("Hold 2+", 1),
-        ScoringOption("Hold More", 1),
-        ScoringOption("Battle tactic scored", 2)
-    ))
+
+sealed class BPScoring(val scoringOptions: Set<ScoringOption>) {
+    object DefaultScoring : BPScoring(
+        setOf(
+            ScoringOption("Hold 1", 1),
+            ScoringOption("Hold 2+", 1),
+            ScoringOption("Hold More", 1),
+            ScoringOption("Battle tactic scored", 2)
+        )
+    )
 }

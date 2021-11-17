@@ -2,4 +2,31 @@
     <string name="app_name">AosTracker</string>
     <string name="title_pregame">Pre Game</string>
     <string name="title_turn_display">Turns</string>
+    <string name="faction_stormcast">Stormcast Eternals</string>
+    <string name="faction_orruks">Orruk Warclans</string>
+    <string name="faction_beasts">Beasts of Chaos</string>
+    <string name="faction_khorne">Blades of Khorne</string>
+    <string name="faction_cities">Cities of Sigmar</string>
+    <string name="faction_khaine">Daughters of Khaine</string>
+    <string name="faction_tzeench">Disciples of Tzeench</string>
+    <string name="faction_fleshEaters">Flesh-eater Courts</string>
+    <string name="faction_fyreslayers">Fyerslayers</string>
+    <string name="faction_gitz">Gloomspite Gitz</string>
+    <string name="faction_slaanesh">Hedonites of Slaanesh</string>
+    <string name="faction_idoneth">Idoneth Deepkin</string>
+    <string name="faction_kharadron">Kharadron Overlords</string>
+    <string name="faction_belakor">Legion of the First Prince</string>
+    <string name="faction_lumineth">Lumineth Realm-lords</string>
+    <string name="faction_nurgle">Maggotkin of Nurgle</string>
+    <string name="faction_nighthaunt">Nighthaunt</string>
+    <string name="faction_ogor">Ogor Mawtribes</string>
+    <string name="faction_bonereapers">Ossiarch Bonereapers</string>
+    <string name="faction_seraphon">Seraphon</string>
+    <string name="faction_skaven">Skaven</string>
+    <string name="faction_slaves">Slaves to Darkness</string>
+    <string name="faction_behemat">Sons of Behemat</string>
+    <string name="faction_gravelords">Soulblight Gravelords</string>
+    <string name="faction_sylvaneth">Sylvaneth</string>
+
+
 </resources>

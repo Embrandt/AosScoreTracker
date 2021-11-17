@@ -3,6 +3,8 @@ package de.embrandt.aostracker.presentation.pregame
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardActions
@@ -13,12 +15,15 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.material.datepicker.MaterialDatePicker
 import de.embrandt.aostracker.domain.model.BattlePlan
@@ -173,6 +178,7 @@ fun PregameContent(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FactionFieldWithChoiceDialog(
     defaultLabel: String,
@@ -181,7 +187,7 @@ fun FactionFieldWithChoiceDialog(
 ) {
     var openFactionDialog by remember { mutableStateOf(false) }
     TextField(
-        value = selectedFaction?.name ?: defaultLabel,
+        value = selectedFaction?.let { stringResource(id = it.resourceId) } ?: defaultLabel,
         onValueChange = { },
         readOnly = true,
         modifier = Modifier
@@ -203,13 +209,21 @@ fun FactionFieldWithChoiceDialog(
             title = {
                 Text(text = "Select Faction")
             },
+            properties = DialogProperties(usePlatformDefaultWidth = false),
             text = {
-                Column(Modifier.selectableGroup()) {
-                    Configuration.factions.map { faction ->
+                LazyColumn(
+                    Modifier
+                        .fillMaxWidth()
+                        .selectableGroup()
+                ) {
+                    items(Configuration.factions) { faction ->
                         FactionRadioButton(
                             faction = faction,
                             selected = selectedFaction == faction,
-                            onFactionSelected = { onFactionSelected(it) }
+                            onFactionSelected = {
+                                onFactionSelected(it)
+                                openFactionDialog = false
+                            }
                         )
                     }
                 }
@@ -243,7 +257,7 @@ fun FactionRadioButton(faction: Faction, selected: Boolean, onFactionSelected: (
             )
     ) {
         RadioButton(selected = selected, onClick = null)
-        Text(text = faction.name)
+        Text(text = stringResource(faction.resourceId), modifier = Modifier.padding(start = 8.dp))
     }
 }
 
