@@ -20,10 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import de.embrandt.aostracker.domain.model.BattlePlan
-import de.embrandt.aostracker.domain.model.PlayerTurn
-import de.embrandt.aostracker.domain.model.ScoringOption
-import de.embrandt.aostracker.domain.model.TurnData
+import de.embrandt.aostracker.domain.model.*
 import de.embrandt.aostracker.domain.util.BPScoring
 import de.embrandt.aostracker.presentation.GameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
@@ -102,8 +99,8 @@ private fun TurnScreen(
     onTurnChange: (Int) -> Unit,
     onPlayerScoreChange: (Set<ScoringOption>) -> Unit,
     onOpponentScoreChange: (Set<ScoringOption>) -> Unit,
-    availablePlayerTactics: List<String>,
-    availableOpponentTactics: List<String>,
+    availablePlayerTactics: List<BattleTactic>,
+    availableOpponentTactics: List<BattleTactic>,
     battlePlan: BattlePlan? = null
 ) {
     Column {
@@ -177,7 +174,7 @@ private fun TurnScreen(
 fun ParticipantTurnColumn(
     battlePlan: BattlePlan?,
     participantName: String,
-    availableTactics: List<String>,
+    availableTactics: List<BattleTactic>,
     turnInfo: PlayerTurn,
     onTurnDataChange: (PlayerTurn) -> Unit,
     onPlayerScoreChange: (Set<ScoringOption>) -> Unit,
@@ -189,7 +186,7 @@ fun ParticipantTurnColumn(
         CommandPointControl(turnInfo, onTurnDataChange)
         BattleTacticChooser(
             availableTactics = availableTactics,
-            selectedTactic = turnInfo.battleTactic ?: "Battle Tactic",
+            selectedTactic = turnInfo.battleTactic,
             onTacticChosen = {
                 onTurnDataChange(
                     turnInfo.copy(
@@ -270,9 +267,9 @@ private fun RollOff(playerFirstTurn: Boolean?, hasFirstTurnChanged: (Boolean) ->
 
 @Composable
 private fun BattleTacticChooser(
-    availableTactics: List<String>,
-    selectedTactic: String,
-    onTacticChosen: (String) -> Unit
+    availableTactics: List<BattleTactic>,
+    selectedTactic: BattleTactic?,
+    onTacticChosen: (BattleTactic) -> Unit
 ) {
     Column {
         Text(
@@ -283,7 +280,7 @@ private fun BattleTacticChooser(
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         var checked by remember { mutableStateOf(false) }
         TextField(
-            value = selectedTactic,
+            value = selectedTactic?.name?:"Battle Tactic",
             onValueChange = {},
             readOnly = true,
             trailingIcon = {
@@ -316,9 +313,9 @@ private fun BattleTacticChooser(
 
 @Composable
 fun BattleTacticDropdown(
-    availableTactics: List<String>,
+    availableTactics: List<BattleTactic>,
     expanded: Boolean,
-    onDismiss: (String?) -> Unit
+    onDismiss: (BattleTactic?) -> Unit
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -326,7 +323,7 @@ fun BattleTacticDropdown(
         availableTactics.map {
             DropdownMenuItem(onClick = { onDismiss(it) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(it)
+                    Text(it.name)
                     // TODO display explanation
                     IconButton(onClick = { Log.i("Pregame", "clicked help") }) {
                         Icon(Icons.Outlined.HelpOutline, contentDescription = "")
@@ -389,23 +386,11 @@ fun PreviewTurnTopBar() {
 
 @Preview
 @Composable
-fun PreviewBattleTacticMenu() {
-    //TODO make preview work
-    Box {
-        BattleTacticDropdown(
-            availableTactics = listOf("Erst dies", "dann das", "dann jenes"),
-            expanded = true,
-            onDismiss = {}
-        )
-    }
-}
-
-@Preview
-@Composable
 fun PreviewBattleTacticChooser() {
+
     BattleTacticChooser(
-        availableTactics = listOf("Tactic A", "Tactic B"),
-        selectedTactic = "Chosen Tactic",
+        availableTactics = listOf(BattleTactic.TakeOver),
+        selectedTactic = BattleTactic.TakeOver,
         onTacticChosen = {})
 }
 
@@ -415,7 +400,7 @@ private fun TurnScreenRollOfPreview() {
     val playerTurn = PlayerTurn()
     val turnData = TurnData(1, playerTurn, playerTurn)
     AosTrackerTheme {
-        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf("Available"), listOf("Other")
+        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown)
         )
     }
 }
@@ -426,7 +411,7 @@ private fun TurnScreenPreview() {
     val playerTurn = PlayerTurn()
     val turnData = TurnData(1, playerTurn, playerTurn, true)
     AosTrackerTheme {
-        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf("Available"), listOf("Other")
+        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown)
         )
     }
 }

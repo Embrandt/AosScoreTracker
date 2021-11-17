@@ -4,21 +4,13 @@ import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import de.embrandt.aostracker.domain.model.*
+import de.embrandt.aostracker.domain.use_case.GetAvailableTactics
 import java.time.LocalDate
 
 class GameViewModel : ViewModel() {
     private var turnStats = mutableStateListOf<TurnData>()
+    private val getAvailableTactics = GetAvailableTactics()
 
-    private val tactics = listOf(
-        "Ihre Reihen Zerschmettern",
-        "Erobern",
-        "Den Kriegsherr töten",
-        "Entschlossener Vorstoß",
-        "Bringt es zur Strecke",
-        "Aggresive Expansion",
-        "Monströse Übernahme",
-        "Wilde Speerspitze"
-    )
 
     private fun initializeTurns() {
         for (i in 1..5) {
@@ -55,21 +47,31 @@ class GameViewModel : ViewModel() {
     val currentTurn: TurnData?
         get() = turnStats.getOrNull(currentTurnNumber)
 
-    val availablePlayerTactics: List<String> by derivedStateOf {
-        val available = tactics.toMutableList()
+    val availablePlayerTactics: List<BattleTactic> by derivedStateOf {
+        val faction = gameData.playerFaction
+        val battlePack = gameData.battlePack
+
+        val available = getAvailableTactics(faction, battlePack).toMutableList()
+
         for (i in 0 until currentTurnNumber) {
-            available.remove(turnStats[i].playerData.battleTactic)
+            available.removeIf { it == turnStats[i].playerData.battleTactic }
+        }
+
+        return@derivedStateOf available
+    }
+
+    val availableOpponentTactics: List<BattleTactic> by derivedStateOf {
+        val faction = gameData.opponentFaction
+        val battlePack = gameData.battlePack
+
+        val available = getAvailableTactics(faction, battlePack).toMutableList()
+
+        for (i in 0 until currentTurnNumber) {
+            available.removeIf { it == turnStats[i].opponentData.battleTactic }
         }
         return@derivedStateOf available
     }
 
-    val availableOpponentTactics: List<String> by derivedStateOf {
-        val available = tactics.toMutableList()
-        for (turnData in turnStats) {
-            available.remove(turnData.opponentData.battleTactic)
-        }
-        return@derivedStateOf available
-    }
     val playerTotalScore: Int by derivedStateOf {
         var totalScore = 0
         for (turnStat in turnStats) {

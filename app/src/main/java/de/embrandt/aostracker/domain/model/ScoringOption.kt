@@ -1,3 +1,3 @@
 package de.embrandt.aostracker.domain.model
 
-data class ScoringOption (val shortDescripton : String, val pointValue : Int)
+data class ScoringOption (val shortDescripton : String, val pointValue : Int, val extraPoint : List<ScoringOption> = emptyList())

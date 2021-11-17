@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter
 
 data class GameData(
     val battleDate: LocalDate?,
+    val battlePack: BattlePack? = BattlePack.Gur,
     val battlePlan: BattlePlan? = null,
     val playerName: String = "",
     val opponentName: String = "",
