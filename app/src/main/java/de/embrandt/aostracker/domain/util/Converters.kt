@@ -40,13 +40,20 @@ class Converters {
     }
 
     @TypeConverter
-    fun toString(battlePlan: BattlePlan?): String {
-        return battlePlan.toString()
+    fun toString(battlePlan: BattlePlan?): Int? {
+        return battlePlan?.nameRessource
     }
 
     @TypeConverter
-    fun fromString(name: String): BattlePlan {
-        return BattlePlan("Gibs nich", emptySet())
+    fun battlePlanFromRessourceId(id: Int?): BattlePlan? {
+        return id?.let {
+            when(it) {
+                R.string.battlePlan_powerStruggle -> BattlePlan.PowerStruggle
+                R.string.battlePlan_savageGains -> BattlePlan.SavageGains
+                R.string.battlePlan_vice -> BattlePlan.TheVice
+                else -> throw IllegalArgumentException(" Unknown battle plan")
+            }
+        }
     }
 
     @TypeConverter

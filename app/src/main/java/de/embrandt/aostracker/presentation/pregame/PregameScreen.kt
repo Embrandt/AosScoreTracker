@@ -113,7 +113,7 @@ fun PregameContent(
         Box {
             var dropdownOpen by remember { mutableStateOf(false) }
             TextField(
-                value = gameData.battlePlan?.name ?: "",
+                value = gameData.battlePlan?.let { stringResource(id = it.nameRessource) } ?: "",
                 onValueChange = { },
                 readOnly = true,
                 modifier = Modifier
@@ -136,7 +136,7 @@ fun PregameContent(
                             onBattlePlanChange(it)
                             dropdownOpen = false
                         }) {
-                        Text(it.name)
+                        Text(stringResource(id = it.nameRessource))
                     }
                 }
             }

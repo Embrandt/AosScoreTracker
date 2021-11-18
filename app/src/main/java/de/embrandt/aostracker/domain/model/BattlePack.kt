@@ -1,15 +1,17 @@
 package de.embrandt.aostracker.domain.model
 
 import androidx.annotation.StringRes
+import de.embrandt.aostracker.R
 
 sealed class BattlePack(
     @StringRes val nameRessource: Int,
-    val scoringOptions: List<ScoringOption> = emptyList(),
+    val scoringOptions: List<ScoringOption>,
     val battleTactics: List<BattleTactic>,
     val grandStrategies: List<GrandStrategy>
 ) {
     object Gur : BattlePack(
-        nameRessource = 0,
+        nameRessource = R.string.battlePack_gur,
+        scoringOptions = listOf(ScoringOption.SlayMonster),
         battleTactics = listOf(
             BattleTactic.BrokenRanks,
             BattleTactic.Conquer,

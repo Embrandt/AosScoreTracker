@@ -21,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.embrandt.aostracker.domain.model.*
-import de.embrandt.aostracker.domain.util.BPScoring
 import de.embrandt.aostracker.presentation.GameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
@@ -34,6 +33,7 @@ fun TurnScreenStart() {
         turnViewModel.currentTurn!!,
         turnViewModel::onTurnDataChanged,
         turnViewModel::onTurnChange,
+        turnViewModel.scoringOptions,
         turnViewModel::onPlayerScoreChange,
         turnViewModel::onOpponentScoreChange,
         turnViewModel.availablePlayerTactics,
@@ -97,6 +97,7 @@ private fun TurnScreen(
     turnInfo: TurnData,
     onTurnDataChange: (TurnData) -> Unit,
     onTurnChange: (Int) -> Unit,
+    scoringOptions: Set<ScoringOption>,
     onPlayerScoreChange: (Set<ScoringOption>) -> Unit,
     onOpponentScoreChange: (Set<ScoringOption>) -> Unit,
     availablePlayerTactics: List<BattleTactic>,
@@ -121,6 +122,7 @@ private fun TurnScreen(
                     Row {
                         ParticipantTurnColumn(
                             battlePlan = battlePlan,
+                            scoringOptions= scoringOptions,
                             participantName = myName,
                             availableTactics = availablePlayerTactics,
                             turnInfo = turnInfo.playerData,
@@ -132,6 +134,7 @@ private fun TurnScreen(
                         )
                         ParticipantTurnColumn(
                             battlePlan = battlePlan,
+                            scoringOptions= scoringOptions,
                             participantName = opponentName,
                             availableTactics = availableOpponentTactics,
                             turnInfo = turnInfo.opponentData,
@@ -145,6 +148,7 @@ private fun TurnScreen(
                     Row {
                         ParticipantTurnColumn(
                             battlePlan = battlePlan,
+                            scoringOptions= scoringOptions,
                             participantName = opponentName,
                             availableTactics = availableOpponentTactics,
                             turnInfo = turnInfo.opponentData,
@@ -156,6 +160,7 @@ private fun TurnScreen(
                         )
                         ParticipantTurnColumn(
                             battlePlan = battlePlan,
+                            scoringOptions= scoringOptions,
                             participantName = myName,
                             availableTactics = availablePlayerTactics,
                             turnInfo = turnInfo.playerData,
@@ -173,6 +178,7 @@ private fun TurnScreen(
 @Composable
 fun ParticipantTurnColumn(
     battlePlan: BattlePlan?,
+    scoringOptions: Set<ScoringOption>,
     participantName: String,
     availableTactics: List<BattleTactic>,
     turnInfo: PlayerTurn,
@@ -197,7 +203,7 @@ fun ParticipantTurnColumn(
         )
         if (battlePlan != null) {
             PointScoring(
-                scoringOptions = battlePlan.scoringOptions,
+                scoringOptions = scoringOptions,
                 scoredByParticipant = turnInfo.scores,
                 onScoreChange = { onPlayerScoreChange(it) })
         }
@@ -372,7 +378,7 @@ fun Counter(label: String, number: Int, onNumberChange: (Int) -> Unit) {
 @Composable
 fun PreviewPointScoring() {
     AosTrackerTheme {
-        PointScoring(BPScoring.DefaultScoring.scoringOptions, emptySet(), {})
+        PointScoring(BattlePlan.SavageGains.scoringOptions, emptySet(), {})
     }
 }
 
@@ -400,7 +406,8 @@ private fun TurnScreenRollOfPreview() {
     val playerTurn = PlayerTurn()
     val turnData = TurnData(1, playerTurn, playerTurn)
     AosTrackerTheme {
-        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown)
+        TurnScreen("Marcel", "Bastl", turnData, {}, {},
+            emptySet(), {}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown)
         )
     }
 }
@@ -411,7 +418,7 @@ private fun TurnScreenPreview() {
     val playerTurn = PlayerTurn()
     val turnData = TurnData(1, playerTurn, playerTurn, true)
     AosTrackerTheme {
-        TurnScreen("Marcel", "Bastl", turnData, {}, {}, {}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown)
+        TurnScreen("Marcel", "Bastl", turnData, {}, {}, emptySet(),{}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown)
         )
     }
 }

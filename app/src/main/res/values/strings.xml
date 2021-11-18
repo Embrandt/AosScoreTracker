@@ -27,6 +27,10 @@
     <string name="faction_behemat">Sons of Behemat</string>
     <string name="faction_gravelords">Soulblight Gravelords</string>
     <string name="faction_sylvaneth">Sylvaneth</string>
+    <string name="battlePlan_powerStruggle">Machtkampf</string>
+    <string name="battlePlan_vice">Schraubstock</string>
+    <string name="battlePlan_savageGains">Brutale Eroberung</string>
+    <string name="battlePack_gur">Gur</string>
 
 
 </resources>
