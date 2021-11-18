@@ -17,20 +17,27 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import de.embrandt.aostracker.data.data_source.GameDatabase
 import de.embrandt.aostracker.presentation.turn.TurnScreenStart
 import de.embrandt.aostracker.presentation.pregame.PregameScreen
 import de.embrandt.aostracker.presentation.GameViewModel
+import de.embrandt.aostracker.presentation.GameViewModelFactory
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var viewModel : GameViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val datasource = GameDatabase.getInstance(application).gameDataDao
+        val gameViewModelFactory = GameViewModelFactory(datasource)
+        viewModel = ViewModelProvider(this, gameViewModelFactory).get(GameViewModel::class.java)
         setContent {
             AosTrackerTheme {
                 MainApp()

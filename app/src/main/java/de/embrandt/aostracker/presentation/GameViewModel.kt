@@ -3,16 +3,20 @@ package de.embrandt.aostracker.presentation
 import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import de.embrandt.aostracker.data.data_source.GameDataDao
 import de.embrandt.aostracker.domain.model.*
 import de.embrandt.aostracker.domain.use_case.GetAvailableTactics
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class GameViewModel : ViewModel() {
+class GameViewModel(dataSource: GameDataDao) : ViewModel() {
     private var turnStats = mutableStateListOf<TurnData>()
     private val getAvailableTactics = GetAvailableTactics()
-
+    private val database = dataSource
 
     private fun initializeTurns() {
+        initGameData()
         for (i in 1..5) {
 
             val playerTurn = PlayerTurn()
@@ -27,9 +31,31 @@ class GameViewModel : ViewModel() {
         initializeTurns()
     }
 
-    var gameData by mutableStateOf(GameData(LocalDate.now()))
+    var gameData by mutableStateOf(GameData(battleDate = LocalDate.now()))
+    private fun initGameData() {
+        viewModelScope.launch {
+            val myStuff = getCurrentGameFromDatabase()
+            myStuff?.let { gameData = it }
+        }
+    }
+
+    private suspend fun getCurrentGameFromDatabase(): GameData? {
+        var currentGame = database.getCurrentGame()
+        if (currentGame == null) {
+            database.insert(GameData(battleDate = LocalDate.now()))
+            currentGame = database.getCurrentGame()
+        }
+        return currentGame
+
+    }
+
+    private suspend fun updateGameData() {
+        database.update(gameData)
+    }
+
     fun onGameDataChanged(newData: GameData) {
         gameData = newData
+        viewModelScope.launch { updateGameData() }
     }
 
     fun onBattlePlanChanged(battlePlan: BattlePlan) {
@@ -111,7 +137,8 @@ class GameViewModel : ViewModel() {
 
     fun onOpponentScoreChange(newScores: Set<ScoringOption>) {
         currentTurn?.let {
-            val changedTurnData = it.copy(opponentData = it.opponentData.copy(scores = newScores))
+            val changedTurnData =
+                it.copy(opponentData = it.opponentData.copy(scores = newScores))
             onTurnDataChanged(changedTurnData)
         }
     }
