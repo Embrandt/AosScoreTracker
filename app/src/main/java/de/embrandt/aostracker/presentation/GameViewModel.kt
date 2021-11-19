@@ -14,16 +14,10 @@ class GameViewModel(dataSource: GameDataDao) : ViewModel() {
     private var turnStats = mutableStateListOf<TurnData>()
     private val getAvailableTactics = GetAvailableTactics()
     private val database = dataSource
+    var gameData by mutableStateOf(GameData(battleDate = LocalDate.now()))
 
     private fun initializeTurns() {
         initGameData()
-        for (i in 1..5) {
-
-            val playerTurn = PlayerTurn()
-            val opponentTurn = PlayerTurn()
-            val turnData = TurnData(i, playerTurn, opponentTurn)
-            turnStats.add(turnData)
-        }
     }
 
     init {
@@ -31,19 +25,44 @@ class GameViewModel(dataSource: GameDataDao) : ViewModel() {
         initializeTurns()
     }
 
-    var gameData by mutableStateOf(GameData(battleDate = LocalDate.now()))
+    private suspend fun insertTurnData(data: List<TurnData>) {
+        Log.i("Pregame", "Insert turndata with gameId ${data[0].gameId}")
+        database.insertList(data)
+    }
+
+    private suspend fun updateTurnData(data : TurnData) {
+        database.update(data)
+    }
     private fun initGameData() {
         viewModelScope.launch {
             val myStuff = getCurrentGameFromDatabase()
             myStuff?.let { gameData = it }
+            Log.i("Pregame", "got data back")
+            if (turnStats.isEmpty()) {
+                for (i in 1..5) {
+                    Log.i("Pregame", "turnstats empty")
+                    val playerTurn = PlayerTurn()
+                    val opponentTurn = PlayerTurn()
+                    val turnData = TurnData(i, playerTurn, opponentTurn, gameId = gameData.gameId)
+                    turnStats.add(turnData)
+                }
+                insertTurnData(turnStats)
+            }
         }
     }
 
     private suspend fun getCurrentGameFromDatabase(): GameData? {
-        var currentGame = database.getCurrentGame()
+        val currentGameWithScoring = database.getCurrentGameWithScoring()
+        var currentGame = currentGameWithScoring?.gameData
         if (currentGame == null) {
             database.insert(GameData(battleDate = LocalDate.now()))
             currentGame = database.getCurrentGame()
+        } else {
+            Log.i("Pregame", "get old stats")
+            currentGameWithScoring?.let {
+                Log.i("Pregame", "turn 1 is ${it.turns.size}")
+                turnStats.addAll(it.turns)
+            }
         }
         return currentGame
 
@@ -87,7 +106,7 @@ class GameViewModel(dataSource: GameDataDao) : ViewModel() {
     }
     val scoringOptions: Set<ScoringOption> by derivedStateOf {
         val scoringOptions = mutableSetOf<ScoringOption>()
-        gameData.battlePack?.let{scoringOptions.addAll(it.scoringOptions)}
+        gameData.battlePack?.let { scoringOptions.addAll(it.scoringOptions) }
         gameData.battlePlan?.let { scoringOptions.addAll(it.scoringOptions) }
         return@derivedStateOf scoringOptions
     }
@@ -128,6 +147,11 @@ class GameViewModel(dataSource: GameDataDao) : ViewModel() {
             "You can only change data of the current turn"
         }
         turnStats[currentTurnNumber] = turnData
+        viewModelScope.launch {
+            Log.i("Pregame", "starting to update turndata")
+            updateTurnData(turnData)
+            Log.i("Pregame", "turndata updated")
+        }
     }
 
     fun onTurnChange(turnNumber: Int) {

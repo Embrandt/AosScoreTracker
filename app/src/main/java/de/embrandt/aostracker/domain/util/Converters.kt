@@ -2,9 +2,7 @@ package de.embrandt.aostracker.domain.util
 
 import androidx.room.TypeConverter
 import de.embrandt.aostracker.R
-import de.embrandt.aostracker.domain.model.BattlePack
-import de.embrandt.aostracker.domain.model.BattlePlan
-import de.embrandt.aostracker.domain.model.Faction
+import de.embrandt.aostracker.domain.model.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -93,5 +91,45 @@ class Converters {
                 else -> throw IllegalArgumentException("Unknown faction id")
             }
         }
+    }
+
+    @TypeConverter
+    fun scoreListToString(scores : Set<ScoringOption>) : String {
+        var databaseString = ""
+        for (score in scores) {
+            databaseString += score.name
+            databaseString += ","
+        }
+        return databaseString.dropLast(1)
+    }
+
+    @TypeConverter
+    fun fromDatabaseString(databaseString : String) : Set<ScoringOption> {
+        if(databaseString.isEmpty()) {
+            return emptySet()
+        }
+        return databaseString.split(",").map {
+            ScoringOption.valueOf(it)
+        }.toSet()
+    }
+
+    @TypeConverter
+    fun toScoringOption(value : String) : ScoringOption {
+        return enumValueOf<ScoringOption>(value)
+    }
+
+    @TypeConverter
+    fun fromScoringOption(value : ScoringOption) : String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun fromBattleTactic(value : BattleTactic?) : String? {
+        return value?.name
+    }
+
+    @TypeConverter
+    fun toBattleTactic(value : String?) : BattleTactic? {
+        return value?.let { enumValueOf<BattleTactic>(it) }
     }
 }

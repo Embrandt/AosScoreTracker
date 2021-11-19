@@ -286,7 +286,7 @@ private fun BattleTacticChooser(
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         var checked by remember { mutableStateOf(false) }
         TextField(
-            value = selectedTactic?.name?:"Battle Tactic",
+            value = selectedTactic?.nameId?:"Battle Tactic",
             onValueChange = {},
             readOnly = true,
             trailingIcon = {
@@ -329,7 +329,7 @@ fun BattleTacticDropdown(
         availableTactics.map {
             DropdownMenuItem(onClick = { onDismiss(it) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(it.name)
+                    Text(it.nameId)
                     // TODO display explanation
                     IconButton(onClick = { Log.i("Pregame", "clicked help") }) {
                         Icon(Icons.Outlined.HelpOutline, contentDescription = "")

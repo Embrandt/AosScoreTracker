@@ -6,10 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import de.embrandt.aostracker.domain.model.GameData
+import de.embrandt.aostracker.domain.model.TurnData
 import de.embrandt.aostracker.domain.util.Converters
 
 @TypeConverters(Converters::class)
-@Database(entities = [GameData::class], version = 1, exportSchema = false)
+@Database(entities = [GameData::class, TurnData::class], version = 2, exportSchema = false)
 abstract class GameDatabase : RoomDatabase() {
     abstract val gameDataDao : GameDataDao
     companion object {

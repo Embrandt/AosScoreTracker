@@ -1,12 +1,12 @@
 package de.embrandt.aostracker.domain.model
 
-sealed class BattleTactic (val name : String, val explanation : String = "") {
-    object BrokenRanks : BattleTactic("Ihre Reihen Zerschmettern")
-    object Conquer : BattleTactic("Erobern")
-    object SlayTheWarlord : BattleTactic("Den Kriegsherr töten")
-    object Advance : BattleTactic("Entschlossener Vorstoß")
-    object BringItDown : BattleTactic("Bringt es zur Strecke")
-    object Expansion : BattleTactic("Aggresive Expansion")
-    object TakeOver : BattleTactic("Monströse Übernahme")
-    object Spearhead : BattleTactic("Wilde Speerspitze")
+enum class BattleTactic (val nameId : String, val explanation : String = "") {
+    BrokenRanks("Ihre Reihen Zerschmettern"),
+    Conquer ("Erobern"),
+    SlayTheWarlord ("Den Kriegsherr töten"),
+    Advance ("Entschlossener Vorstoß"),
+    BringItDown ("Bringt es zur Strecke"),
+    Expansion ("Aggresive Expansion"),
+    TakeOver ("Monströse Übernahme"),
+    Spearhead ("Wilde Speerspitze")
 }
