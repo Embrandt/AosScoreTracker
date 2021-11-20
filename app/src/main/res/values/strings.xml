@@ -2,6 +2,8 @@
     <string name="app_name">AosTracker</string>
     <string name="title_pregame">Pre Game</string>
     <string name="title_turn_display">Turns</string>
+
+    <!-- Factions -->
     <string name="faction_stormcast">Stormcast Eternals</string>
     <string name="faction_orruks">Orruk Warclans</string>
     <string name="faction_beasts">Beasts of Chaos</string>
@@ -27,10 +29,15 @@
     <string name="faction_behemat">Sons of Behemat</string>
     <string name="faction_gravelords">Soulblight Gravelords</string>
     <string name="faction_sylvaneth">Sylvaneth</string>
+
+    <!-- Battle plans -->
     <string name="battlePlan_powerStruggle">Machtkampf</string>
     <string name="battlePlan_vice">Schraubstock</string>
     <string name="battlePlan_savageGains">Brutale Eroberung</string>
     <string name="battlePack_gur">Gur</string>
 
+    <!-- Grand Strategies -->
+    <string name="grandStrategy_prizedSorcery">Geschätze Magie</string>
+    <string name="notImplemented">Not implemented yet</string>
 
 </resources>

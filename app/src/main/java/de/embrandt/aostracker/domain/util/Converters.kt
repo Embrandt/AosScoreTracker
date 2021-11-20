@@ -45,7 +45,7 @@ class Converters {
     @TypeConverter
     fun battlePlanFromRessourceId(id: Int?): BattlePlan? {
         return id?.let {
-            when(it) {
+            when (it) {
                 R.string.battlePlan_powerStruggle -> BattlePlan.PowerStruggle
                 R.string.battlePlan_savageGains -> BattlePlan.SavageGains
                 R.string.battlePlan_vice -> BattlePlan.TheVice
@@ -94,7 +94,7 @@ class Converters {
     }
 
     @TypeConverter
-    fun scoreListToString(scores : Set<ScoringOption>) : String {
+    fun scoreListToString(scores: Set<ScoringOption>): String {
         var databaseString = ""
         for (score in scores) {
             databaseString += score.name
@@ -104,32 +104,12 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromDatabaseString(databaseString : String) : Set<ScoringOption> {
-        if(databaseString.isEmpty()) {
+    fun fromDatabaseString(databaseString: String): Set<ScoringOption> {
+        if (databaseString.isEmpty()) {
             return emptySet()
         }
         return databaseString.split(",").map {
             ScoringOption.valueOf(it)
         }.toSet()
-    }
-
-    @TypeConverter
-    fun toScoringOption(value : String) : ScoringOption {
-        return enumValueOf<ScoringOption>(value)
-    }
-
-    @TypeConverter
-    fun fromScoringOption(value : ScoringOption) : String {
-        return value.name
-    }
-
-    @TypeConverter
-    fun fromBattleTactic(value : BattleTactic?) : String? {
-        return value?.name
-    }
-
-    @TypeConverter
-    fun toBattleTactic(value : String?) : BattleTactic? {
-        return value?.let { enumValueOf<BattleTactic>(it) }
     }
 }

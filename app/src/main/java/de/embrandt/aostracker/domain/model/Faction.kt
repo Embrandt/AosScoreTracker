@@ -6,7 +6,7 @@ import de.embrandt.aostracker.R
 sealed class Faction(
     @StringRes val resourceId: Int,
     val battleTactics: List<BattleTactic> = emptyList(),
-    val grandStrategies: List<String> = emptyList()
+    val grandStrategies: List<GrandStrategy> = emptyList()
 ) {
     object Stormcast : Faction(R.string.faction_stormcast)
     object Orruks : Faction(R.string.faction_orruks)

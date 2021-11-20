@@ -29,6 +29,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import de.embrandt.aostracker.domain.model.BattlePlan
 import de.embrandt.aostracker.domain.model.Faction
 import de.embrandt.aostracker.domain.model.GameData
+import de.embrandt.aostracker.domain.model.GrandStrategy
 import de.embrandt.aostracker.domain.util.Configuration
 import de.embrandt.aostracker.presentation.GameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
@@ -72,6 +73,8 @@ fun PregameScreen() {
     val viewModel: GameViewModel = viewModel(LocalContext.current as AppCompatActivity)
     PregameContent(
         gameData = viewModel.gameData,
+        viewModel.availablePlayerGrandStrategies,
+        viewModel.availableOpponentGrandStrategies,
         onGameDataChange = viewModel::onGameDataChanged,
         onBattlePlanChange = viewModel::onBattlePlanChanged
     )
@@ -80,6 +83,8 @@ fun PregameScreen() {
 @Composable
 fun PregameContent(
     gameData: GameData,
+    playerAvailableGrandStrategies: List<GrandStrategy>,
+    opponentAvailableGrandStrategies: List<GrandStrategy>,
     onGameDataChange: (GameData) -> Unit,
     onBattlePlanChange: (BattlePlan) -> Unit
 ) {
@@ -153,11 +158,13 @@ fun PregameContent(
             onFactionSelected = { onGameDataChange(gameData.copy(playerFaction = it)) }
         )
 
-        PregameTextField(
-            value = gameData.playerGrandStrategy,
-            onValueChange = { onGameDataChange(gameData.copy(playerGrandStrategy = it)) },
-            label = "Your Grand Strategy"
+        StrategyFieldWithDropDown(
+            label = "Your Grand Strategy",
+            selectedStrategy = gameData.playerGrandStrategy,
+            availableGrandStrategies = playerAvailableGrandStrategies,
+            onStrategySelected = { onGameDataChange(gameData.copy(playerGrandStrategy = it)) }
         )
+
         PregameTextField(
             value = gameData.opponentName,
             onValueChange = { onGameDataChange(gameData.copy(opponentName = it)) },
@@ -170,11 +177,53 @@ fun PregameContent(
             onFactionSelected = { onGameDataChange(gameData.copy(opponentFaction = it)) }
         )
 
-        PregameTextField(
-            value = gameData.opponentGrandStrategy,
-            onValueChange = { onGameDataChange(gameData.copy(opponentGrandStrategy = it)) },
-            label = "Opponents' Grand Strategy"
+        StrategyFieldWithDropDown(
+            label = "Opponents' Grand Strategy",
+            selectedStrategy = gameData.opponentGrandStrategy,
+            availableGrandStrategies = opponentAvailableGrandStrategies,
+            onStrategySelected = { onGameDataChange(gameData.copy(opponentGrandStrategy = it)) }
         )
+    }
+}
+
+@Composable
+private fun StrategyFieldWithDropDown(
+    label: String,
+    selectedStrategy: GrandStrategy?,
+    availableGrandStrategies: List<GrandStrategy>,
+    onStrategySelected: (GrandStrategy) -> Unit
+) {
+    Box {
+        var dropdownOpen by remember { mutableStateOf(false) }
+        TextField(
+            value = selectedStrategy?.let { stringResource(id = it.nameResource) }
+                ?: "",
+            onValueChange = { },
+            readOnly = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            label = { Text(label) },
+            trailingIcon = {
+                IconButton(
+                    onClick = { dropdownOpen = true }
+                ) {
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = "")
+                }
+            })
+        DropdownMenu(
+            expanded = dropdownOpen,
+            onDismissRequest = { dropdownOpen = false }) {
+            availableGrandStrategies.map {
+                DropdownMenuItem(
+                    onClick = {
+                        onStrategySelected(it)
+                        dropdownOpen = false
+                    }) {
+                    Text(stringResource(id = it.nameResource))
+                }
+            }
+        }
     }
 }
 
@@ -266,6 +315,6 @@ fun FactionRadioButton(faction: Faction, selected: Boolean, onFactionSelected: (
 private fun PreViewScreen() {
     val gameData = GameData(null, playerName = "Marcel")
     AosTrackerTheme {
-        PregameContent(gameData, onGameDataChange = {}, {})
+        PregameContent(gameData, emptyList(), emptyList(), onGameDataChange = {}, {})
     }
 }

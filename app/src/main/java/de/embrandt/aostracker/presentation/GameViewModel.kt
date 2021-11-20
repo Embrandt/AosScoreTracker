@@ -103,6 +103,18 @@ class GameViewModel(dataSource: GameDataDao) : ViewModel() {
 
         return@derivedStateOf available
     }
+    val availablePlayerGrandStrategies: List<GrandStrategy> by derivedStateOf {
+        val strategies = mutableListOf<GrandStrategy>()
+        gameData.playerFaction?.let{strategies.addAll(it.grandStrategies)}
+        gameData.battlePack?.let{ strategies.addAll(it.grandStrategies)}
+        strategies
+    }
+    val availableOpponentGrandStrategies: List<GrandStrategy> by derivedStateOf {
+        val strategies = mutableListOf<GrandStrategy>()
+        gameData.opponentFaction?.let{strategies.addAll(it.grandStrategies)}
+        gameData.battlePack?.let{ strategies.addAll(it.grandStrategies)}
+        strategies
+    }
     val scoringOptions: Set<ScoringOption> by derivedStateOf {
         val scoringOptions = mutableSetOf<ScoringOption>()
         gameData.battlePack?.let { scoringOptions.addAll(it.scoringOptions) }

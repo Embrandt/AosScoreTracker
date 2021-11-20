@@ -14,16 +14,16 @@ data class GameData(
     val playerName: String = "",
     val opponentName: String = "",
     val playerFaction: Faction? = null,
-    val playerGrandStrategy: String = "",
+    val playerGrandStrategy: GrandStrategy? = null,
     val opponentFaction: Faction? = null,
-    val opponentGrandStrategy: String = "",
+    val opponentGrandStrategy: GrandStrategy? = null,
     @PrimaryKey(autoGenerate = true)
-    val gameId : Long = 0L
+    val gameId: Long = 0L
 ) {
     @Ignore
     private val newFormat = DateTimeFormatter.ISO_LOCAL_DATE
 
-    val battleDateText : String
+    val battleDateText: String
         @Ignore
         get() = battleDate?.format(newFormat) ?: ""
 }
