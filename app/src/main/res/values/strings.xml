@@ -38,7 +38,14 @@
     <string name="battlePack_gur">Gur</string>
 
     <!-- Grand Strategies -->
-    <string name="grandStrategy_prizedSorcery">Geschätze Magie</string>
+    <string name="grandStrategy_severTheHead">Sever the Head</string>
+    <string name="grandStrategy_holdTheLine">Hold the Line</string>
+    <string name="grandStrategy_vendetta">Vendetta</string>
+    <string name="grandStrategy_dominatingPresence">Dominating Presence</string>
+    <string name="grandStrategy_beastMaster">Beast Master</string>
+    <string name="grandStrategy_prizedSorcery">Prized Sorcery</string>
+    <string name="grandStrategy_pillarsOfBelief">Pillars of Belief</string>
+    <string name="grandStrategy_predatorsDomain">Predator’s Domain</string>
 
     <!-- Battle tactics -->
     <string name="battleTactic_brokenRanks">Ihre Reihen Zerschmettern</string>

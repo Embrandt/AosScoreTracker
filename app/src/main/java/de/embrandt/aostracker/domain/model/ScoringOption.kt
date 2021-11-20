@@ -14,5 +14,8 @@ enum class ScoringOption(
     HoldOwn("Ziel an Grenze des eigenen Territoriums gehalten", 1),
     HoldNeutral("Neutrales Ziel gehalten", 2),
     HoldEnemy("Ziel an Grenze des generischen Territoriums gehalten", 4),
-    SlayMonster("Monster getötet", 1)
+    SlayMonster("Monster getötet", 1),
+    SlayWithMonster("Mit Monster getötet", 1),
+    RunWithMonster("Alle drei waren Monster", 1),
+    HoldWithMonster("Mindestens zwei Monster dabei", 1)
 }

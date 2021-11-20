@@ -2,6 +2,7 @@ package de.embrandt.aostracker.domain.model
 
 import androidx.annotation.StringRes
 import de.embrandt.aostracker.R
+import de.embrandt.aostracker.domain.model.GrandStrategy.*
 
 enum class BattlePack(
     @StringRes val nameRessource: Int,
@@ -22,6 +23,15 @@ enum class BattlePack(
             BattleTactic.Spearhead,
             BattleTactic.TakeOver
         ),
-        grandStrategies = listOf(GrandStrategy.PrizedSorcery)
+        grandStrategies = listOf(
+            SeverTheHead,
+            HoldTheLine,
+            Vendetta,
+            DominatingPresence,
+            BeastMaster,
+            PrizedSorcery,
+            PillarsOfBelief,
+            PredatorsDomain
+        )
     )
 }

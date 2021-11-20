@@ -9,7 +9,15 @@
     <string name="battlePack_gur">Gur</string>
 
     <!-- Grand Strategies -->
+    <string name="grandStrategy_severTheHead">Enthauptung</string>
+    <string name="grandStrategy_holdTheLine">Linie halten</string>
+    <string name="grandStrategy_vendetta">Vendetta</string>
+    <string name="grandStrategy_dominatingPresence">Präsenz des Herrschers</string>
+    <string name="grandStrategy_beastMaster">Bestienmeister</string>
     <string name="grandStrategy_prizedSorcery">Geschätze Magie</string>
+    <string name="grandStrategy_pillarsOfBelief">Säulen des Glaubens</string>
+    <string name="grandStrategy_predatorsDomain">Reich des Jägers</string>
+
 
     <!-- Battle tactics -->
     <string name="battleTactic_brokenRanks">Ihre Reihen Zerschmettern</string>

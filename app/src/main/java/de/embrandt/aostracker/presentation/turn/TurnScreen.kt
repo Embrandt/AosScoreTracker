@@ -124,7 +124,7 @@ private fun TurnScreen(
                     Row {
                         ParticipantTurnColumn(
                             battlePlan = battlePlan,
-                            scoringOptions= scoringOptions,
+                            scoringOptions = scoringOptions,
                             participantName = myName,
                             availableTactics = availablePlayerTactics,
                             turnInfo = turnInfo.playerData,
@@ -136,7 +136,7 @@ private fun TurnScreen(
                         )
                         ParticipantTurnColumn(
                             battlePlan = battlePlan,
-                            scoringOptions= scoringOptions,
+                            scoringOptions = scoringOptions,
                             participantName = opponentName,
                             availableTactics = availableOpponentTactics,
                             turnInfo = turnInfo.opponentData,
@@ -150,7 +150,7 @@ private fun TurnScreen(
                     Row {
                         ParticipantTurnColumn(
                             battlePlan = battlePlan,
-                            scoringOptions= scoringOptions,
+                            scoringOptions = scoringOptions,
                             participantName = opponentName,
                             availableTactics = availableOpponentTactics,
                             turnInfo = turnInfo.opponentData,
@@ -162,7 +162,7 @@ private fun TurnScreen(
                         )
                         ParticipantTurnColumn(
                             battlePlan = battlePlan,
-                            scoringOptions= scoringOptions,
+                            scoringOptions = scoringOptions,
                             participantName = myName,
                             availableTactics = availablePlayerTactics,
                             turnInfo = turnInfo.playerData,
@@ -207,7 +207,9 @@ fun ParticipantTurnColumn(
             PointScoring(
                 scoringOptions = scoringOptions,
                 scoredByParticipant = turnInfo.scores,
-                onScoreChange = { onPlayerScoreChange(it) })
+                onScoreChange = { onPlayerScoreChange(it) },
+                battleTactic = turnInfo.battleTactic
+            )
         }
     }
 }
@@ -217,7 +219,8 @@ private fun PointScoring(
     scoringOptions: Set<ScoringOption>,
     scoredByParticipant: Set<ScoringOption>,
     onScoreChange: (Set<ScoringOption>) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    battleTactic: BattleTactic? = null
 ) {
     Column(modifier.padding(top = 16.dp)) {
         Text(text = "Objectives scored", style = MaterialTheme.typography.subtitle2)
@@ -232,21 +235,43 @@ private fun PointScoring(
                     if (scoreChanged) {
                         newScores.add(score)
                     } else {
+                        if  (score == ScoringOption.BattleTactic) {
+                            newScores.remove(battleTactic?.extraScore)
+                        }
                         newScores.remove(score)
                     }
                     onScoreChange(newScores)
                 }
             )
+            if (score == ScoringOption.BattleTactic && isScored) {
+                if (battleTactic?.extraScore != null) {
+                    val extraScore: ScoringOption = battleTactic.extraScore
+                    ScoringCheckBox(
+                        scoringOpting = extraScore.shortDescripton,
+                        scored = extraScore in scoredByParticipant,
+                        onScoredChange = { scoreChanged ->
+                            val newScores = scoredByParticipant.toMutableSet()
+                            if (scoreChanged) {
+                                newScores.add(extraScore)
+                            } else {
+                                newScores.remove(extraScore)
+                            }
+                            onScoreChange(newScores)
+                        },
+                        modifier = Modifier.padding(start=16.dp)
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-fun ScoringCheckBox(scoringOpting: String, scored: Boolean, onScoredChange: (Boolean) -> Unit) {
+fun ScoringCheckBox(scoringOpting: String, scored: Boolean, onScoredChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
     Row(
-        Modifier
+        modifier
             .fillMaxWidth(1f)
-            .padding(top=8.dp)
+            .padding(top = 8.dp)
             .clickable { onScoredChange(!scored) },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -291,7 +316,7 @@ private fun BattleTacticChooser(
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         var checked by remember { mutableStateOf(false) }
         TextField(
-            value = selectedTactic?.let{ stringResource(id = it.nameResource)}?:"Battle Tactic",
+            value = selectedTactic?.let { stringResource(id = it.nameResource) } ?: "Battle Tactic",
             onValueChange = {},
             readOnly = true,
             trailingIcon = {
@@ -351,11 +376,11 @@ private fun CommandPointControl(turnData: PlayerTurn, onTurnDataChange: (PlayerT
         Text("Command Points", style = MaterialTheme.typography.subtitle2)
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         Counter(
-            label = "Gained",
+            label = "Command Points",
             number = turnData.commandPointsGained,
             onNumberChange = { if (it >= 0) onTurnDataChange(turnData.copy(commandPointsGained = it)) })
         Counter(
-            label = "Spent",
+            label = "Faction Points",
             number = turnData.commandPointsSpent,
             onNumberChange = { if (it >= 0) onTurnDataChange(turnData.copy(commandPointsSpent = it)) })
     }
@@ -411,8 +436,17 @@ private fun TurnScreenRollOfPreview() {
     val playerTurn = PlayerTurn()
     val turnData = TurnData(1, playerTurn, playerTurn)
     AosTrackerTheme {
-        TurnScreen("Marcel", "Bastl", turnData, {}, {},
-            emptySet(), {}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown), BattlePlan.SavageGains
+        TurnScreen("Marcel",
+            "Bastl",
+            turnData,
+            {},
+            {},
+            emptySet(),
+            {},
+            {},
+            listOf(BattleTactic.BringItDown),
+            listOf(BattleTactic.BringItDown),
+            BattlePlan.SavageGains
         )
     }
 }
