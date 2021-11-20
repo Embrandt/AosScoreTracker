@@ -104,7 +104,7 @@ private fun TurnScreen(
     onOpponentScoreChange: (Set<ScoringOption>) -> Unit,
     availablePlayerTactics: List<BattleTactic>,
     availableOpponentTactics: List<BattleTactic>,
-    battlePlan: BattlePlan? = null
+    battlePlan: BattlePlan?
 ) {
     Column {
         TurnTopBar(
@@ -246,7 +246,10 @@ fun ScoringCheckBox(scoringOpting: String, scored: Boolean, onScoredChange: (Boo
     Row(
         Modifier
             .fillMaxWidth(1f)
-            .clickable { onScoredChange(!scored) }) {
+            .padding(top=8.dp)
+            .clickable { onScoredChange(!scored) },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Checkbox(checked = scored, onCheckedChange = onScoredChange)
         Text(text = scoringOpting)
     }
@@ -409,7 +412,7 @@ private fun TurnScreenRollOfPreview() {
     val turnData = TurnData(1, playerTurn, playerTurn)
     AosTrackerTheme {
         TurnScreen("Marcel", "Bastl", turnData, {}, {},
-            emptySet(), {}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown)
+            emptySet(), {}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown), BattlePlan.SavageGains
         )
     }
 }
@@ -420,7 +423,18 @@ private fun TurnScreenPreview() {
     val playerTurn = PlayerTurn()
     val turnData = TurnData(1, playerTurn, playerTurn, true)
     AosTrackerTheme {
-        TurnScreen("Marcel", "Bastl", turnData, {}, {}, emptySet(),{}, {}, listOf(BattleTactic.BringItDown), listOf(BattleTactic.BringItDown)
+        TurnScreen(
+            myName = "Marcel",
+            opponentName = "Bastl",
+            turnInfo = turnData,
+            onTurnDataChange = {},
+            onTurnChange = {},
+            scoringOptions = BattlePlan.SavageGains.scoringOptions,
+            onPlayerScoreChange = {},
+            onOpponentScoreChange = {},
+            availablePlayerTactics = listOf(BattleTactic.BringItDown),
+            availableOpponentTactics = listOf(BattleTactic.BringItDown),
+            battlePlan = BattlePlan.SavageGains
         )
     }
 }
