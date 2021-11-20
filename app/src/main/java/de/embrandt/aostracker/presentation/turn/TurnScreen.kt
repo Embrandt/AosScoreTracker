@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -287,7 +288,7 @@ private fun BattleTacticChooser(
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         var checked by remember { mutableStateOf(false) }
         TextField(
-            value = selectedTactic?.nameId?:"Battle Tactic",
+            value = selectedTactic?.let{ stringResource(id = it.nameResource)}?:"Battle Tactic",
             onValueChange = {},
             readOnly = true,
             trailingIcon = {
@@ -330,7 +331,7 @@ fun BattleTacticDropdown(
         availableTactics.map {
             DropdownMenuItem(onClick = { onDismiss(it) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(it.nameId)
+                    Text(stringResource(id = it.nameResource))
                     // TODO display explanation
                     IconButton(onClick = { Log.i("Pregame", "clicked help") }) {
                         Icon(Icons.Outlined.HelpOutline, contentDescription = "")

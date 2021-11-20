@@ -3,20 +3,19 @@ package de.embrandt.aostracker.domain.model
 import androidx.annotation.StringRes
 import de.embrandt.aostracker.R
 import de.embrandt.aostracker.domain.model.ScoringOption.*
+import de.embrandt.aostracker.domain.model.ScoringOption.BattleTactic
 
-sealed class BattlePlan(@StringRes val nameRessource: Int, val scoringOptions : Set<ScoringOption>) {
-    object PowerStruggle : BattlePlan(
+enum class BattlePlan(@StringRes val nameRessource: Int, val scoringOptions: Set<ScoringOption>) {
+    PowerStruggle(
         nameRessource = R.string.battlePlan_powerStruggle,
         scoringOptions = setOf(Hold1Consecutive, Hold2Consecutive, HoldMore, BattleTactic)
-    )
-    object TheVice : BattlePlan(
+    ),
+    TheVice(
         nameRessource = R.string.battlePlan_vice,
         scoringOptions = setOf(Hold1, Hold2, HoldMore, BattleTactic)
-    )
-    object SavageGains : BattlePlan(
+    ),
+    SavageGains(
         nameRessource = R.string.battlePlan_savageGains,
-        scoringOptions = setOf(
-            HoldOwn, HoldNeutral, HoldEnemy, BattleTactic
-        )
+        scoringOptions = setOf(HoldOwn, HoldNeutral, HoldEnemy, BattleTactic)
     )
 }

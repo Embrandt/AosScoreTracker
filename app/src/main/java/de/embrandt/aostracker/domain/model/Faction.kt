@@ -3,35 +3,35 @@ package de.embrandt.aostracker.domain.model
 import androidx.annotation.StringRes
 import de.embrandt.aostracker.R
 
-sealed class Faction(
+enum class Faction(
     @StringRes val resourceId: Int,
     val battleTactics: List<BattleTactic> = emptyList(),
     val grandStrategies: List<GrandStrategy> = emptyList()
 ) {
-    object Stormcast : Faction(R.string.faction_stormcast)
-    object Orruks : Faction(R.string.faction_orruks)
-    object Beasts : Faction(R.string.faction_beasts)
-    object Khorne : Faction(R.string.faction_khorne)
-    object Cities : Faction(R.string.faction_cities)
-    object Khaine : Faction(R.string.faction_khaine)
-    object Tzeench : Faction(R.string.faction_tzeench)
-    object FleshEaters : Faction(R.string.faction_fleshEaters)
-    object Fyreslayers : Faction(R.string.faction_fyreslayers)
-    object Gitz : Faction(R.string.faction_gitz)
-    object Slaanesh : Faction(R.string.faction_slaanesh)
-    object Idoneth : Faction(R.string.faction_idoneth)
-    object Kharadron : Faction(R.string.faction_kharadron)
-    object Belakor : Faction(R.string.faction_belakor)
-    object Lumineth : Faction(R.string.faction_lumineth)
-    object Nurgle : Faction(R.string.faction_nurgle)
-    object Nighthaunt : Faction(R.string.faction_nighthaunt)
-    object Ogor : Faction(R.string.faction_ogor)
-    object Bonereapers : Faction(R.string.faction_bonereapers)
-    object Seraphon : Faction(R.string.faction_seraphon)
-    object Skaven : Faction(R.string.faction_skaven)
-    object Slaves : Faction(R.string.faction_slaves)
-    object Behemat : Faction(R.string.faction_behemat)
-    object Gravelords : Faction(R.string.faction_gravelords)
-    object Sylvaneth : Faction(R.string.faction_sylvaneth)
+    Stormcast(R.string.faction_stormcast),
+    Orruks(R.string.faction_orruks),
+    Beasts(R.string.faction_beasts),
+    Khorne(R.string.faction_khorne),
+    Cities(R.string.faction_cities),
+    Khaine(R.string.faction_khaine),
+    Tzeench(R.string.faction_tzeench),
+    FleshEaters(R.string.faction_fleshEaters),
+    Fyreslayers(R.string.faction_fyreslayers),
+    Gitz(R.string.faction_gitz),
+    Slaanesh(R.string.faction_slaanesh),
+    Idoneth(R.string.faction_idoneth),
+    Kharadron(R.string.faction_kharadron),
+    Belakor(R.string.faction_belakor),
+    Lumineth(R.string.faction_lumineth),
+    Nurgle(R.string.faction_nurgle),
+    Nighthaunt(R.string.faction_nighthaunt),
+    Ogor(R.string.faction_ogor),
+    Bonereapers(R.string.faction_bonereapers),
+    Seraphon(R.string.faction_seraphon),
+    Skaven(R.string.faction_skaven),
+    Slaves(R.string.faction_slaves),
+    Behemat(R.string.faction_behemat),
+    Gravelords(R.string.faction_gravelords),
+    Sylvaneth(R.string.faction_sylvaneth),
 }
 

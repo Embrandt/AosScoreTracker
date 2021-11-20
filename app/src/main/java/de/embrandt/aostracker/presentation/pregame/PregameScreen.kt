@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.material.datepicker.MaterialDatePicker
+import de.embrandt.aostracker.R
 import de.embrandt.aostracker.domain.model.BattlePlan
 import de.embrandt.aostracker.domain.model.Faction
 import de.embrandt.aostracker.domain.model.GameData
@@ -103,7 +104,7 @@ fun PregameContent(
             Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
-            label = { Text("BattleDate") },
+            label = { Text(stringResource(id = R.string.label_pregame_battleDate)) },
             trailingIcon = {
                 IconButton(
                     onClick = {

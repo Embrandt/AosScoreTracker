@@ -1,12 +1,15 @@
 package de.embrandt.aostracker.domain.model
 
-enum class BattleTactic (val nameId : String, val explanation : String = "", val extraScore : ScoringOption? = null) {
-    BrokenRanks("Ihre Reihen Zerschmettern"),
-    Conquer ("Erobern"),
-    SlayTheWarlord ("Den Kriegsherr töten"),
-    Advance ("Entschlossener Vorstoß"),
-    BringItDown ("Bringt es zur Strecke"),
-    Expansion ("Aggresive Expansion"),
-    TakeOver ("Monströse Übernahme"),
-    Spearhead ("Wilde Speerspitze")
+import androidx.annotation.StringRes
+import de.embrandt.aostracker.R
+
+enum class BattleTactic (@StringRes val nameResource : Int, @StringRes val explanation : Int, val extraScore : ScoringOption? = null) {
+    BrokenRanks(R.string.battleTactic_brokenRanks, R.string.notImplemented),
+    Conquer (R.string.battleTactic_conquer, R.string.notImplemented),
+    SlayTheWarlord (R.string.battleTactic_slayTheWarlord, R.string.notImplemented),
+    Advance (R.string.battleTactic_advance, R.string.notImplemented),
+    BringItDown (R.string.battleTactic_bringItDown, R.string.notImplemented),
+    Expansion (R.string.battleTactic_expansion, R.string.notImplemented),
+    TakeOver (R.string.battleTactic_takeOver, R.string.notImplemented),
+    Spearhead (R.string.battleTactic_spearhead, R.string.notImplemented)
 }

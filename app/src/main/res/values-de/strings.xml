@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="faction_stormcast">Sturmies</string>
+
+    <!-- Battle plans -->
+    <string name="battlePlan_powerStruggle">Machtkampf</string>
+    <string name="battlePlan_vice">Schraubstock</string>
+    <string name="battlePlan_savageGains">Brutale Eroberung</string>
+    <string name="battlePack_gur">Gur</string>
+
+    <!-- Grand Strategies -->
+    <string name="grandStrategy_prizedSorcery">Geschätze Magie</string>
+
+    <!-- Battle tactics -->
+    <string name="battleTactic_brokenRanks">Ihre Reihen Zerschmettern</string>
+    <string name="battleTactic_conquer">Erobern</string>
+    <string name="battleTactic_slayTheWarlord">Den Kriegsherr töten</string>
+    <string name="battleTactic_advance">Entschlossener Vorstoß</string>
+    <string name="battleTactic_bringItDown">Bringt es zur Strecke</string>
+    <string name="battleTactic_expansion">Aggressive Expansion</string>
+    <string name="battleTactic_takeOver">Monströse Übernahme</string>
+    <string name="battleTactic_spearhead">Wilde Speerspitze</string>
+    <string name="faction_orruks">Orruk Warclans</string>
+    <string name="title_turn_display">Schlachtrunden</string>
+</resources>

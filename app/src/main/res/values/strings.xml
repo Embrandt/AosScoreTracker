@@ -1,7 +1,8 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">AosTracker</string>
     <string name="title_pregame">Pre Game</string>
     <string name="title_turn_display">Turns</string>
+    <string name="label_pregame_battleDate">Battle Date</string>
 
     <!-- Factions -->
     <string name="faction_stormcast">Stormcast Eternals</string>
@@ -38,6 +39,16 @@
 
     <!-- Grand Strategies -->
     <string name="grandStrategy_prizedSorcery">Geschätze Magie</string>
+
+    <!-- Battle tactics -->
+    <string name="battleTactic_brokenRanks">Ihre Reihen Zerschmettern</string>
+    <string name="battleTactic_conquer">Erobern</string>
+    <string name="battleTactic_slayTheWarlord">Den Kriegsherr töten</string>
+    <string name="battleTactic_advance">Entschlossener Vorstoß</string>
+    <string name="battleTactic_bringItDown">Bringt es zur Strecke</string>
+    <string name="battleTactic_expansion">Aggressive Expansion</string>
+    <string name="battleTactic_takeOver">Monströse Übernahme</string>
+    <string name="battleTactic_spearhead">Wilde Speerspitze</string>
     <string name="notImplemented">Not implemented yet</string>
 
 </resources>
