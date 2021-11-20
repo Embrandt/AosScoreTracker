@@ -1,6 +1,6 @@
 package de.embrandt.aostracker.domain.model
 
-enum class BattleTactic (val nameId : String, val explanation : String = "") {
+enum class BattleTactic (val nameId : String, val explanation : String = "", val extraScore : ScoringOption? = null) {
     BrokenRanks("Ihre Reihen Zerschmettern"),
     Conquer ("Erobern"),
     SlayTheWarlord ("Den Kriegsherr töten"),

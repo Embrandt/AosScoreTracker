@@ -16,13 +16,9 @@ class GameViewModel(dataSource: GameDataDao) : ViewModel() {
     private val database = dataSource
     var gameData by mutableStateOf(GameData(battleDate = LocalDate.now()))
 
-    private fun initializeTurns() {
-        initGameData()
-    }
-
     init {
         Log.i("PregameModel", "created")
-        initializeTurns()
+        initGameData()
     }
 
     private suspend fun insertTurnData(data: List<TurnData>) {
@@ -30,9 +26,10 @@ class GameViewModel(dataSource: GameDataDao) : ViewModel() {
         database.insertList(data)
     }
 
-    private suspend fun updateTurnData(data : TurnData) {
+    private suspend fun updateTurnData(data: TurnData) {
         database.update(data)
     }
+
     private fun initGameData() {
         viewModelScope.launch {
             val myStuff = getCurrentGameFromDatabase()
@@ -48,6 +45,8 @@ class GameViewModel(dataSource: GameDataDao) : ViewModel() {
                 }
                 insertTurnData(turnStats)
             }
+            val allMyStugg = database.getAllGames()
+            Log.i("Pregame", "got all games ${allMyStugg.size}")
         }
     }
 
@@ -171,6 +170,26 @@ class GameViewModel(dataSource: GameDataDao) : ViewModel() {
                 it.copy(opponentData = it.opponentData.copy(scores = newScores))
             onTurnDataChanged(changedTurnData)
         }
+    }
+
+    fun controlCurrentBattleTactic() {
+        val thisTurn = currentTurn
+        requireNotNull(thisTurn)
+        val playerData = thisTurn.playerData
+        val opponentData = thisTurn.opponentData
+        if (playerData.battleTactic != null && playerData.battleTactic !in availablePlayerTactics) {
+            Log.i("Pregame", "caught wrong playerdata")
+            onTurnDataChanged(thisTurn.copy(playerData = playerData.copy(battleTactic = null)))
+        }
+        if (opponentData.battleTactic != null && opponentData.battleTactic !in availableOpponentTactics) {
+            Log.i("Pregame", "caught wrong opponentData")
+            onTurnDataChanged(thisTurn.copy(opponentData = opponentData.copy(battleTactic = null)))
+        }
+    }
+
+    // TODO move to own viewModel
+    suspend fun getAllGames(): List<GameData> {
+        return database.getAllGames()
     }
 
 }

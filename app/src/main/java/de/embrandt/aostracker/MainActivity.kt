@@ -25,10 +25,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import de.embrandt.aostracker.data.data_source.GameDatabase
-import de.embrandt.aostracker.presentation.turn.TurnScreenStart
-import de.embrandt.aostracker.presentation.pregame.PregameScreen
 import de.embrandt.aostracker.presentation.GameViewModel
 import de.embrandt.aostracker.presentation.GameViewModelFactory
+import de.embrandt.aostracker.presentation.pregame.PregameScreen
+import de.embrandt.aostracker.presentation.turn.TurnScreenStart
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 
 class MainActivity : AppCompatActivity() {
@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             AosTrackerTheme {
                 MainApp()
+//                GameSelectionScreen()
             }
         }
     }

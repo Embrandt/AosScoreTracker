@@ -27,6 +27,7 @@ import de.embrandt.aostracker.ui.theme.AosTrackerTheme
 @Composable
 fun TurnScreenStart() {
     val turnViewModel: GameViewModel = viewModel(LocalContext.current as AppCompatActivity)
+    turnViewModel.controlCurrentBattleTactic()
     TurnScreen(
         turnViewModel.gameData.playerName,
         turnViewModel.gameData.opponentName,

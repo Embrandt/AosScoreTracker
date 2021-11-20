@@ -20,6 +20,9 @@ interface GameDataDao {
     @Query("SELECT * FROM gamedata ORDER BY gameId ASC LIMIT 1")
     suspend fun getCurrentGameWithScoring(): GameDataWithTurnScoring?
 
+    @Query("SELECT * FROM gamedata ORDER BY gameId DESC")
+    suspend fun getAllGames() : List<GameData>
+
     @Insert
     suspend fun insert(turnData: TurnData)
 
