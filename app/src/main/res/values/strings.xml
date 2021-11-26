@@ -3,6 +3,7 @@
     <string name="title_pregame">Pre Game</string>
     <string name="title_turn_display">Turns</string>
     <string name="label_pregame_battleDate">Battle Date</string>
+    <string name="label_battleTactic">Battle Tactic</string>
 
     <!-- Factions -->
     <string name="faction_stormcast">Stormcast Eternals</string>

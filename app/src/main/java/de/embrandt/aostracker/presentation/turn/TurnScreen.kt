@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import de.embrandt.aostracker.R
 import de.embrandt.aostracker.domain.model.*
 import de.embrandt.aostracker.presentation.GameViewModel
 import de.embrandt.aostracker.ui.theme.AosTrackerTheme
@@ -188,9 +189,9 @@ fun ParticipantTurnColumn(
     onPlayerScoreChange: (Set<ScoringOption>) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier) {
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = participantName)
-        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
+        Divider(Modifier.padding(top = 8.dp, bottom = 8.dp), thickness = 2.dp)
         CommandPointControl(turnInfo, onTurnDataChange)
         BattleTacticChooser(
             availableTactics = availableTactics,
@@ -223,7 +224,11 @@ private fun PointScoring(
     battleTactic: BattleTactic? = null
 ) {
     Column(modifier.padding(top = 16.dp)) {
-        Text(text = "Objectives scored", style = MaterialTheme.typography.subtitle2)
+        Text(
+            text = "Objectives scored",
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            style = MaterialTheme.typography.subtitle2
+        )
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         scoringOptions.map { score ->
             val isScored = score in scoredByParticipant
@@ -235,7 +240,7 @@ private fun PointScoring(
                     if (scoreChanged) {
                         newScores.add(score)
                     } else {
-                        if  (score == ScoringOption.BattleTactic) {
+                        if (score == ScoringOption.BattleTactic) {
                             newScores.remove(battleTactic?.extraScore)
                         }
                         newScores.remove(score)
@@ -258,7 +263,7 @@ private fun PointScoring(
                             }
                             onScoreChange(newScores)
                         },
-                        modifier = Modifier.padding(start=16.dp)
+                        modifier = Modifier.padding(start = 16.dp)
                     )
                 }
             }
@@ -267,7 +272,12 @@ private fun PointScoring(
 }
 
 @Composable
-fun ScoringCheckBox(scoringOpting: String, scored: Boolean, onScoredChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+fun ScoringCheckBox(
+    scoringOpting: String,
+    scored: Boolean,
+    onScoredChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier
             .fillMaxWidth(1f)
@@ -281,7 +291,7 @@ fun ScoringCheckBox(scoringOpting: String, scored: Boolean, onScoredChange: (Boo
 }
 
 @Composable
-private fun RollOff(playerFirstTurn: Boolean?, hasFirstTurnChanged: (Boolean) -> Unit) {
+fun RollOff(playerFirstTurn: Boolean?, hasFirstTurnChanged: (Boolean) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Who has first turn?", style = MaterialTheme.typography.caption)
         Row(
@@ -305,11 +315,11 @@ private fun RollOff(playerFirstTurn: Boolean?, hasFirstTurnChanged: (Boolean) ->
 private fun BattleTacticChooser(
     availableTactics: List<BattleTactic>,
     selectedTactic: BattleTactic?,
-    onTacticChosen: (BattleTactic) -> Unit
+    onTacticChosen: (BattleTactic?) -> Unit
 ) {
-    Column {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            "Battle Tactic",
+            stringResource(R.string.label_battleTactic),
             Modifier.padding(top = 8.dp),
             style = MaterialTheme.typography.subtitle2
         )
@@ -327,15 +337,17 @@ private fun BattleTacticChooser(
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "")
                 }
             },
+            modifier = Modifier.fillMaxWidth(),
             label =
             when {
                 checked -> {
                     {
                         BattleTacticDropdown(
                             availableTactics = availableTactics,
+                            selectedTactic = selectedTactic,
                             expanded = checked,
                             onDismiss = { chosenTactic ->
-                                chosenTactic?.apply { onTacticChosen(chosenTactic) }
+                                onTacticChosen(chosenTactic)
                                 checked = false
                             }
                         )
@@ -350,12 +362,16 @@ private fun BattleTacticChooser(
 @Composable
 fun BattleTacticDropdown(
     availableTactics: List<BattleTactic>,
+    selectedTactic: BattleTactic?,
     expanded: Boolean,
     onDismiss: (BattleTactic?) -> Unit
 ) {
     DropdownMenu(
         expanded = expanded,
-        onDismissRequest = { onDismiss(null) }) {
+        onDismissRequest = { onDismiss(selectedTactic) }) {
+        DropdownMenuItem(onClick = { onDismiss(null) }) {
+            Text(stringResource(R.string.label_battleTactic))
+        }
         availableTactics.map {
             DropdownMenuItem(onClick = { onDismiss(it) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -373,7 +389,11 @@ fun BattleTacticDropdown(
 @Composable
 private fun CommandPointControl(turnData: PlayerTurn, onTurnDataChange: (PlayerTurn) -> Unit) {
     Column(Modifier.padding(top = 8.dp)) {
-        Text("Command Points", style = MaterialTheme.typography.subtitle2)
+        Text(
+            "Command Points",
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            style = MaterialTheme.typography.subtitle2
+        )
         Divider(Modifier.padding(top = 8.dp, bottom = 8.dp))
         Counter(
             label = "Command Points",
@@ -436,7 +456,8 @@ private fun TurnScreenRollOfPreview() {
     val playerTurn = PlayerTurn()
     val turnData = TurnData(1, playerTurn, playerTurn)
     AosTrackerTheme {
-        TurnScreen("Marcel",
+        TurnScreen(
+            "Marcel",
             "Bastl",
             turnData,
             {},
@@ -478,7 +499,7 @@ private fun TurnScreenPreview() {
 private fun CommandPointsPreview() {
     val playerTurn = PlayerTurn()
     AosTrackerTheme {
-        CommandPointControl(playerTurn, {})
+        CommandPointControl(turnData = playerTurn, onTurnDataChange = {})
     }
 }
 
