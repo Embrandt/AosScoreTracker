@@ -8,14 +8,10 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.ArrowLeft
-import androidx.compose.material.icons.outlined.ArrowRight
 import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,7 +31,6 @@ fun TurnScreenStart() {
         turnViewModel.gameData.opponentName,
         turnViewModel.currentTurn!!,
         turnViewModel::onTurnDataChanged,
-        turnViewModel::onTurnChange,
         turnViewModel.scoringOptions,
         turnViewModel::onPlayerScoreChange,
         turnViewModel::onOpponentScoreChange,
@@ -46,60 +41,11 @@ fun TurnScreenStart() {
 }
 
 @Composable
-fun TurnTopBar(turnNumber: Int, onTurnChange: (Int) -> Unit) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(0.dp)
-    ) {
-        TopAppBar(
-            modifier = Modifier.height(42.dp),
-            navigationIcon = {
-                IconButton(
-                    enabled = turnNumber != 1,
-                    onClick = { onTurnChange(turnNumber - 1) },
-                    modifier = Modifier.alpha(0.5f)
-                ) {
-                    Icon(Icons.Outlined.ArrowLeft, contentDescription = null)
-                }
-
-            },
-            actions = {
-                IconButton(enabled = turnNumber != 5, onClick = { onTurnChange(turnNumber + 1) }) {
-                    Icon(Icons.Outlined.ArrowRight, contentDescription = null)
-                }
-            },
-            title = {
-                var dropdownOpen by remember { mutableStateOf(false) }
-                TextButton(modifier = Modifier.weight(1f), onClick = { dropdownOpen = true }) {
-                    Text(text = "Turn $turnNumber")
-                    Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
-                }
-                DropdownMenu(expanded = dropdownOpen, onDismissRequest = { dropdownOpen = false }) {
-                    for (i in 1..5) {
-                        DropdownMenuItem(onClick = {
-                            onTurnChange(i)
-                            dropdownOpen = false
-                        }) {
-                            Text("Turn $i")
-                        }
-                    }
-                }
-
-            }
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-    }
-
-}
-
-@Composable
 private fun TurnScreen(
     myName: String,
     opponentName: String,
     turnInfo: TurnData,
     onTurnDataChange: (TurnData) -> Unit,
-    onTurnChange: (Int) -> Unit,
     scoringOptions: Set<ScoringOption>,
     onPlayerScoreChange: (Set<ScoringOption>) -> Unit,
     onOpponentScoreChange: (Set<ScoringOption>) -> Unit,
@@ -108,9 +54,6 @@ private fun TurnScreen(
     battlePlan: BattlePlan?
 ) {
     Column {
-        TurnTopBar(
-            turnNumber = turnInfo.turnNumber,
-            onTurnChange = { onTurnChange(it) })
         Column(
             Modifier
                 .fillMaxWidth()
@@ -434,14 +377,6 @@ fun PreviewPointScoring() {
 
 @Preview
 @Composable
-fun PreviewTurnTopBar() {
-    AosTrackerTheme {
-        TurnTopBar(turnNumber = 2, onTurnChange = {})
-    }
-}
-
-@Preview
-@Composable
 fun PreviewBattleTacticChooser() {
 
     BattleTacticChooser(
@@ -460,7 +395,6 @@ private fun TurnScreenRollOfPreview() {
             "Marcel",
             "Bastl",
             turnData,
-            {},
             {},
             emptySet(),
             {},
@@ -483,7 +417,6 @@ private fun TurnScreenPreview() {
             opponentName = "Bastl",
             turnInfo = turnData,
             onTurnDataChange = {},
-            onTurnChange = {},
             scoringOptions = BattlePlan.SavageGains.scoringOptions,
             onPlayerScoreChange = {},
             onOpponentScoreChange = {},
